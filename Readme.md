@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Alexander K](https://up.htmlacademy.ru/javascript/20/user/70531).
-* Наставник: `Неизвестно`.
+* Наставник: [Азад Аллахвердиев](https://htmlacademy.ru/profile/id1425141).
 
 ---
 
