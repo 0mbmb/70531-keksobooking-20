@@ -19,42 +19,42 @@ function getRandomIntFromRange(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-function removeClassFromClass(removeFrom, remove) {
-  document.querySelector('.' + removeFrom).classList.remove(remove);
+function removeClassFromElement(classToRemove, elementToRemoveFrom) {
+  document.querySelector('.' + elementToRemoveFrom).classList.remove(classToRemove);
 }
 
 function createSimilarPropertiesList() {
   var similarList = [];
   for (var i = 0; i < SIMILAR_NUMBER; i++) {
     similarList[i] = {
-      author: {},
-      offer: {},
-      location: {}
+      author: {
+        avatar: 'img/avatars/user0' + (i + 1) + '.png'
+      },
+      offer: {
+        title: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+        address: getRandomIntFromRange(0, 600) + ', ' + getRandomIntFromRange(0, 350),
+        price: getRandomIntFromRange(500, 1000),
+        type: getRandomFromArray(TYPES),
+        rooms: getRandomIntFromRange(1, 5),
+        guests: getRandomIntFromRange(1, 10),
+        checkin: getRandomFromArray(CHECKIN),
+        checkout: getRandomFromArray(CHECKOUT),
+        features: getRandomFromArray(FEATURES),
+        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+        photos: PHOTOS
+      },
+      location: {
+        x: getRandomIntFromRange(0, 1200),
+        y: getRandomIntFromRange(130, 630)
+      }
     };
-
-    similarList[i].author.avatar = 'img/avatars/user0' + (i + 1) + '.png';
-
-    similarList[i].offer.title = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
-    similarList[i].offer.address = getRandomIntFromRange(0, 600) + ', ' + getRandomIntFromRange(0, 350);
-    similarList[i].offer.price = getRandomIntFromRange(500, 1000);
-    similarList[i].offer.type = getRandomFromArray(TYPES);
-    similarList[i].offer.rooms = getRandomIntFromRange(1, 5);
-    similarList[i].offer.guests = getRandomIntFromRange(1, 10);
-    similarList[i].offer.checkin = getRandomFromArray(CHECKIN);
-    similarList[i].offer.checkout = getRandomFromArray(CHECKOUT);
-    similarList[i].offer.features = getRandomFromArray(FEATURES);
-    similarList[i].offer.description = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
-    similarList[i].offer.photos = PHOTOS;
-
-    similarList[i].location.x = getRandomIntFromRange(0, 1200);
-    similarList[i].location.y = getRandomIntFromRange(130, 630);
   }
   return similarList;
 }
 
 function createSinglePropertyPin(propertyData) {
   var pin = propertyPinTemplate.cloneNode(true);
-  var pinImage = pin.querySelector('img'); // pin.children[0] ?
+  var pinImage = pin.querySelector('img');
 
   pin.style.left = (propertyData.location.x - PIN_SIZE[0] / 2) + 'px';
   pin.style.top = (propertyData.location.y - PIN_SIZE[1]) + 'px';
@@ -72,6 +72,6 @@ function renderSimilarPropertyPins(propertiesData) {
   propertyPinsList.appendChild(pinsFragment);
 }
 
-removeClassFromClass('map', 'map--faded');
+removeClassFromElement('map--faded', 'map');
 var similarProperties = createSimilarPropertiesList();
 renderSimilarPropertyPins(similarProperties);
