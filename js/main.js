@@ -14,12 +14,15 @@ var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditio
 var PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
 
 var PIN_SIZE = ['50', '70'];
-var propertyPinsList = document.querySelector('.map__pins');
-var propertyPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 
-var propertyCardTemplate = document.querySelector('#card').content.querySelector('.map__card');
-var propertyCardsList = document.querySelector('.map');
-var propertyCardsListBeforePosition = document.querySelector('.map__filters-container');
+var mapContainer = document.querySelector('.map');
+
+var mapPins = mapContainer.querySelector('.map__pins');
+var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
+
+var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
+
+var mapFilter = mapContainer.querySelector('.map__filters-container');
 
 function getRandomFromArray(array) {
   return array[Math.floor(Math.random() * array.length)];
@@ -72,8 +75,8 @@ function createSimilarPropertiesList() {
   return similarList;
 }
 
-function createSinglePropertyPin(propertyData) {
-  var pin = propertyPinTemplate.cloneNode(true);
+function createSinglePin(propertyData) {
+  var pin = pinTemplate.cloneNode(true);
   var pinImage = pin.querySelector('img');
 
   pin.style.left = (propertyData.location.x - PIN_SIZE[0] / 2) + 'px';
@@ -86,6 +89,18 @@ function createSinglePropertyPin(propertyData) {
   return pin;
 }
 
+function renderAllPins(propertiesData) {
+  var pinsFragment = document.createDocumentFragment();
+  for (var i = 0; i < propertiesData.length; i++) {
+    var similarPropertyPin = createSinglePin(propertiesData[i]);
+    if (!propertiesData[i].author.avatar) {
+      similarPropertyPin.src = 'img/avatars/default.png';
+    }
+    pinsFragment.appendChild(similarPropertyPin);
+  }
+  mapPins.appendChild(pinsFragment);
+}
+
 function renderCardTextElement(propertyCard, propertyData, dataObjectKey1, dataObjectKey2, elementClass) {
   var textElement = propertyCard.querySelector('.' + elementClass);
   if (propertyData[dataObjectKey1][dataObjectKey2]) {
@@ -95,25 +110,21 @@ function renderCardTextElement(propertyCard, propertyData, dataObjectKey1, dataO
   }
 }
 
-function renderPropertyCardPrice(propertyCard, propertyData) {
+function renderCardPrice(propertyCard, propertyData) {
   var priceElement = propertyCard.querySelector('.popup__text--price');
   if (propertyData.offer.price) {
-    priceElement.innerHTML = propertyData.offer.price + ' \u20BD<span>/ночь</span>'; // ???
+    priceElement.innerHTML = propertyData.offer.price + ' \u20BD<span>/ночь</span>';
   } else {
     priceElement.textContent = '';
   }
 }
 
-function renderPropertyCardType(propertyCard, propertyData) {
+function renderCardType(propertyCard, propertyData) {
   var typeElement = propertyCard.querySelector('.popup__type');
-  if (propertyData.offer.type) {
-    typeElement.textContent = TYPES_TRANSLATION[propertyData.offer.type];
-  } else {
-    typeElement.textContent = '';
-  }
+  typeElement.textContent = propertyData.offer.type ? TYPES_TRANSLATION[propertyData.offer.type] : '';
 }
 
-function renderPropertyCardAvatar(propertyCard, propertyData) {
+function renderCardAvatar(propertyCard, propertyData) {
   var avatarElement = propertyCard.querySelector('.popup__avatar');
   if (propertyData.author.avatar) {
     avatarElement.src = propertyData.author.avatar;
@@ -122,7 +133,7 @@ function renderPropertyCardAvatar(propertyCard, propertyData) {
   }
 }
 
-function renderPropertyCardCapacity(propertyCard, propertyData) {
+function renderCardCapacity(propertyCard, propertyData) {
   var capacityElement = propertyCard.querySelector('.popup__text--capacity');
   capacityElement.textContent = '';
   if (propertyData.offer.rooms) {
@@ -135,7 +146,7 @@ function renderPropertyCardCapacity(propertyCard, propertyData) {
   }
 }
 
-function renderPropertyCardTime(propertyCard, propertyData) {
+function renderCardTime(propertyCard, propertyData) {
   var timeElement = propertyCard.querySelector('.popup__text--time');
   timeElement.textContent = '';
   if (propertyData.offer.checkin) {
@@ -148,40 +159,22 @@ function renderPropertyCardTime(propertyCard, propertyData) {
   }
 }
 
-function renderPropertyCardFeatures(propertyCard, propertyData) {
-  var featuresList = propertyCard.querySelectorAll('.popup__feature');
-  for (var i = 0; i < featuresList.length; i++) {
-    var feature = featuresList[i];
-    var featureContains = false;
-    for (var j = 0; j < propertyData.offer.features.length; j++) {
-      if (feature.classList.contains('popup__feature--' + propertyData.offer.features[j])) {
-        featureContains = true;
-      }
+function renderCardFeatures(propertyCard, propertyData) {
+  var featuresList = propertyCard.querySelector('.popup__features');
+  var features = propertyCard.querySelectorAll('.popup__feature');
+
+  var featuresFragment = document.createDocumentFragment();
+  for (var i = 0; i < features.length; i++) {
+    var feature = featuresList.querySelector('.popup__feature--' + propertyData.offer.features[i]);
+    if (feature) {
+      featuresFragment.appendChild(feature.cloneNode());
     }
-    if (!featureContains) {
-      feature.remove();
-    }
+    features[i].remove();
   }
+  featuresList.appendChild(featuresFragment);
 }
 
-// function renderPropertyCardFeaturesV2(propertyCard, propertyData) {
-//   var featuresList = propertyCard.querySelector('.popup__features');
-//   var features = propertyCard.querySelectorAll('.popup__feature');
-//
-//   var featuresFragment = document.createDocumentFragment();
-//   for (var i = 0; i < features.length; i++) {
-//     var feature = featuresList.querySelector('.popup__feature--' + propertyData.offer.features[i]);
-//     if (feature) {
-//       featuresFragment.appendChild(feature.cloneNode());
-//       features[i].remove();
-//     } else {
-//       features[i].remove();
-//     }
-//   }
-//   featuresList.appendChild(featuresFragment);
-// }
-
-function renderPropertyCardImages(propertyCard, propertyData) {
+function renderCardImages(propertyCard, propertyData) {
   var photosContainer = propertyCard.querySelector('.popup__photos');
   var photosFragment = document.createDocumentFragment();
   var imageThumbnailTemplate = photosContainer.querySelector('.popup__photo');
@@ -195,50 +188,32 @@ function renderPropertyCardImages(propertyCard, propertyData) {
 }
 
 function createSinglePropertyCard(propertyData) {
-  var propertyCard = propertyCardTemplate.cloneNode(true);
+  var propertyCard = cardTemplate.cloneNode(true);
 
-  renderPropertyCardAvatar(propertyCard, propertyData);
+  renderCardAvatar(propertyCard, propertyData);
   renderCardTextElement(propertyCard, propertyData, 'offer', 'title', 'popup__title');
   renderCardTextElement(propertyCard, propertyData, 'offer', 'address', 'popup__text--address');
-  renderPropertyCardPrice(propertyCard, propertyData);
-  renderPropertyCardType(propertyCard, propertyData);
-  renderPropertyCardCapacity(propertyCard, propertyData);
-  renderPropertyCardTime(propertyCard, propertyData);
-  renderPropertyCardFeatures(propertyCard, propertyData);
+  renderCardPrice(propertyCard, propertyData);
+  renderCardType(propertyCard, propertyData);
+  renderCardCapacity(propertyCard, propertyData);
+  renderCardTime(propertyCard, propertyData);
+  renderCardFeatures(propertyCard, propertyData);
   renderCardTextElement(propertyCard, propertyData, 'offer', 'description', 'popup__description');
-  renderPropertyCardImages(propertyCard, propertyData);
+  renderCardImages(propertyCard, propertyData);
 
   return propertyCard;
 }
 
-function renderSimilarPropertyPins(propertiesData) {
-  var pinsFragment = document.createDocumentFragment();
-  for (var i = 0; i < propertiesData.length; i++) {
-    var similarPropertyPin = createSinglePropertyPin(propertiesData[i]);
-    if (!propertiesData[i].author.avatar) {
-      similarPropertyPin.src = 'img/avatars/default.png';
-    }
-    pinsFragment.appendChild(similarPropertyPin);
-  }
-  propertyPinsList.appendChild(pinsFragment);
-}
-
-function renderSimilarPropertyCards(propertiesData) {
+function renderAllCards(propertiesData) {
   var cardsFragment = document.createDocumentFragment();
   for (var i = 0; i < propertiesData.length; i++) {
     var similarPropertyCard = createSinglePropertyCard(propertiesData[i]);
     cardsFragment.appendChild(similarPropertyCard);
   }
-  propertyCardsList.insertBefore(cardsFragment, propertyCardsListBeforePosition);
+  mapContainer.insertBefore(cardsFragment, mapFilter);
 }
 
 removeClassFromElement('map--faded', 'map');
 var similarProperties = createSimilarPropertiesList();
-renderSimilarPropertyPins(similarProperties);
-renderSimilarPropertyCards(similarProperties);
-
-// similarProperties[0].author.avatar = '';
-// similarProperties[0].offer.rooms = '';
-// similarProperties[0].offer.guests = '';
-// console.log(similarProperties);
-// console.log(similarProperties[0].offer.features);
+renderAllPins(similarProperties);
+renderAllCards(similarProperties);
