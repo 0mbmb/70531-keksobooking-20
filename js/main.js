@@ -47,10 +47,6 @@ function getRandomIntFromRange(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-function removeClassFromElement(classToRemove, element) {
-  document.querySelector('.' + element).classList.remove(classToRemove);
-}
-
 function removeRandomItemsFromArray(array) {
   var newArray = [];
   for (var i = 0; i < array.length; i++) {
