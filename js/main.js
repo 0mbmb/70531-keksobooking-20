@@ -14,7 +14,7 @@ var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditio
 var PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
 
 var PIN_SIZE = ['50', '70'];
-var MAIN_PIN_DEFAULT_SIZE = [62, 62]; // ???
+var MAIN_PIN_DEFAULT_SIZE = [62, 62];
 var MAIN_PIN_ACTIVE_SIZE = [62, 84];
 
 var TITLE_MIN_LENGTH = 30;
@@ -86,7 +86,6 @@ function createSimilarPropertiesList() {
   return similarList;
 }
 
-// Pins Create and Render
 function createSinglePin(propertyData) {
   var pin = pinTemplate.cloneNode(true);
   var pinImage = pin.querySelector('img');
@@ -113,7 +112,6 @@ function renderAllPins(propertiesData) {
   mapPins.appendChild(pinsFragment);
 }
 
-// Cards Create and Render
 function renderCardTextElement(propertyCard, propertyData, dataObjectKey1, dataObjectKey2, elementClass) {
   var textElement = propertyCard.querySelector('.' + elementClass);
   if (propertyData[dataObjectKey1][dataObjectKey2]) {
@@ -226,18 +224,14 @@ function renderAllCards(propertiesData) {
   mapContainer.insertBefore(cardsFragment, mapFilter);
 }
 
-// Form Validation
 function isMapActive() {
   return !mapContainer.classList.contains('map--faded');
 }
 
 function getPinCoordinates() {
-  var xOffset = MAIN_PIN_DEFAULT_SIZE[0] / 2;
-  var yOffset = MAIN_PIN_DEFAULT_SIZE[1] / 2;
-  if (isMapActive()) {
-    xOffset = MAIN_PIN_ACTIVE_SIZE[0] / 2;
-    yOffset = MAIN_PIN_ACTIVE_SIZE[1];
-  }
+  var xOffset = isMapActive() ? MAIN_PIN_ACTIVE_SIZE[0] / 2 : MAIN_PIN_DEFAULT_SIZE[0] / 2;
+  var yOffset = isMapActive() ? MAIN_PIN_ACTIVE_SIZE[1] : MAIN_PIN_DEFAULT_SIZE[1] / 2;
+
   return [parseInt(mainPin.style.left, 10) + xOffset, parseInt(mainPin.style.top, 10) + yOffset];
 }
 
@@ -281,15 +275,16 @@ function validateGuests() {
   }
 }
 
+// switch (true) {...} так ок?
 function validateTitle() {
-  if (adFormTitle.validity.tooShort) {
-    adFormTitle.setCustomValidity('Минимальная длина: ' + TITLE_MIN_LENGTH + '. Максимальная длина: ' + TITLE_MAX_LENGTH + '. Осталось ввести: ' + (TITLE_MIN_LENGTH - adFormTitle.value.length));
-  } else if (adFormTitle.validity.tooLong) {
-    adFormTitle.setCustomValidity('Максимальная длина: ' + TITLE_MAX_LENGTH + '. Осталось удалить: ' + (adFormTitle.value.length - TITLE_MAX_LENGTH));
-  } else if (adFormTitle.validity.valueMissing) {
-    adFormTitle.setCustomValidity('Обязательное поле');
-  } else {
-    adFormTitle.setCustomValidity('');
+  switch (true) {
+    case adFormTitle.validity.tooShort: adFormTitle.setCustomValidity('Минимальная длина: ' + TITLE_MIN_LENGTH + '. Максимальная длина: ' + TITLE_MAX_LENGTH + '. Осталось ввести: ' + (TITLE_MIN_LENGTH - adFormTitle.value.length));
+      break;
+    case adFormTitle.validity.tooLong: adFormTitle.setCustomValidity('Максимальная длина: ' + TITLE_MAX_LENGTH + '. Осталось удалить: ' + (adFormTitle.value.length - TITLE_MAX_LENGTH));
+      break;
+    case adFormTitle.validity.valueMissing: adFormTitle.setCustomValidity('Обязательное поле');
+      break;
+    default: adFormTitle.setCustomValidity('');
   }
 }
 
@@ -310,7 +305,6 @@ function validateForm() {
   validatePrice();
 }
 
-// Disable and Enable Map, Filter and Form
 function enableMap() {
   mapContainer.classList.remove('map--faded');
 }
@@ -358,7 +352,7 @@ function onMainPinClick(evt) {
 }
 
 function onMainPinKeydown(evt) {
-  if (evt.keyCode === 13) {
+  if (evt.key === 'Enter') {
     enablePage();
   }
 }
@@ -383,11 +377,9 @@ function enablePage() {
   });
 }
 
-// Default State
 disableMapFilter();
 disableAdForm();
 displayAddress();
 
-// Event Listeners
 mainPin.addEventListener('mousedown', onMainPinClick);
 mainPin.addEventListener('keydown', onMainPinKeydown);
