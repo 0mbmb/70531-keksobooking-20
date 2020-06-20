@@ -3,15 +3,11 @@
 var mainPin = document.querySelector('.map__pin--main');
 
 function onMainPinClick(evt) {
-  if (evt.button === 0) {
-    enablePage();
-  }
+  window.util.onLeftMouseClick(evt, enablePage);
 }
 
 function onMainPinKeydown(evt) {
-  if (evt.key === 'Enter') {
-    enablePage();
-  }
+  window.util.onEnterKeydown(evt, enablePage);
 }
 
 function enablePage() {

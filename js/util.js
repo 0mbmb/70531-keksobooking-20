@@ -25,11 +25,25 @@
     return !mapContainer.classList.contains('map--faded');
   }
 
+  function onEnterKeydown(evt, executeFunction) {
+    if (evt.key === 'Enter') {
+      executeFunction();
+    }
+  }
+
+  function onLeftMouseClick(evt, executeFunction) {
+    if (evt.button === 0) {
+      executeFunction();
+    }
+  }
+
   window.util = {
     getRandomFromArray: getRandomFromArray,
     getRandomIntFromRange: getRandomIntFromRange,
     removeRandomItemsFromArray: removeRandomItemsFromArray,
-    isMapActive: isMapActive
+    isMapActive: isMapActive,
+    onEnterKeydown: onEnterKeydown,
+    onLeftMouseClick: onLeftMouseClick
   };
 
 })();
