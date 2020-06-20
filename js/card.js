@@ -118,7 +118,8 @@
     var newCardClose = newCard.querySelector('.popup__close');
     mapContainer.insertBefore(newCard, mapFilter);
 
-    // ???
+    // нормально ли такое решение? я создаю коллбек внутри другой функции,
+    // чтобы "красиво" передать обработчикам событий
     function removeNewCard() {
       newCard.remove();
     }
