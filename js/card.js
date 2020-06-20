@@ -105,17 +105,39 @@
     return propertyCard;
   }
 
-  function renderAllCards(propertiesData) {
-    var cardsFragment = document.createDocumentFragment();
-    for (var i = 0; i < propertiesData.length; i++) {
-      var similarPropertyCard = createSinglePropertyCard(propertiesData[i]);
-      cardsFragment.appendChild(similarPropertyCard);
+  function removeAllCards() {
+    var allCards = mapContainer.querySelectorAll('.map__card');
+    for (var i = 0; i < allCards.length; i++) {
+      allCards[i].remove();
     }
-    mapContainer.insertBefore(cardsFragment, mapFilter);
+  }
+
+  function renderSingleCard(propertyData) {
+    removeAllCards();
+    var newCard = createSinglePropertyCard(propertyData);
+    var newCardClose = newCard.querySelector('.popup__close');
+    mapContainer.insertBefore(newCard, mapFilter);
+
+    // ???
+    function removeNewCard() {
+      newCard.remove();
+    }
+
+    newCardClose.addEventListener('click', function (evt) {
+      window.util.onLeftMouseClick(evt, removeNewCard);
+    });
+
+    newCardClose.addEventListener('keydown', function (evt) {
+      window.util.onEnterKeydown(evt, removeNewCard);
+    });
+
+    mapContainer.addEventListener('keydown', function (evt) {
+      window.util.onEscKeydown(evt, removeNewCard);
+    });
   }
 
   window.card = {
-    renderAllCards: renderAllCards
+    renderSingleCard: renderSingleCard
   };
 
 })();

@@ -27,12 +27,21 @@
 
   function onEnterKeydown(evt, executeFunction) {
     if (evt.key === 'Enter') {
+      evt.preventDefault();
+      executeFunction();
+    }
+  }
+
+  function onEscKeydown(evt, executeFunction) {
+    if (evt.key === 'Escape') {
+      evt.preventDefault();
       executeFunction();
     }
   }
 
   function onLeftMouseClick(evt, executeFunction) {
     if (evt.button === 0) {
+      evt.preventDefault();
       executeFunction();
     }
   }
@@ -43,6 +52,7 @@
     removeRandomItemsFromArray: removeRandomItemsFromArray,
     isMapActive: isMapActive,
     onEnterKeydown: onEnterKeydown,
+    onEscKeydown: onEscKeydown,
     onLeftMouseClick: onLeftMouseClick
   };
 
