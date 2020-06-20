@@ -1,28 +1,31 @@
 'use strict';
 
-var mainPin = document.querySelector('.map__pin--main');
+(function () {
 
-function onMainPinClick(evt) {
-  window.util.onLeftMouseClick(evt, enablePage);
-}
+  var mainPin = document.querySelector('.map__pin--main');
 
-function onMainPinKeydown(evt) {
-  window.util.onEnterKeydown(evt, enablePage);
-}
-
-function enablePage() {
-  if (!window.util.isMapActive()) {
-    var similarProperties = window.data.createSimilarPropertiesList();
-    window.map.renderAllPins(similarProperties);
-    window.card.renderAllCards(similarProperties);
+  function onMainPinClick(evt) {
+    window.util.onLeftMouseClick(evt, enablePage);
   }
-  window.map.enableMap();
-  window.form.enableAdForm();
-}
 
-window.map.disableMapFilter();
-window.form.disableAdForm();
-window.form.displayAddress();
+  function onMainPinKeydown(evt) {
+    window.util.onEnterKeydown(evt, enablePage);
+  }
 
-mainPin.addEventListener('mousedown', onMainPinClick);
-mainPin.addEventListener('keydown', onMainPinKeydown);
+  function enablePage() {
+    if (!window.util.isMapActive()) {
+      var similarProperties = window.data.createSimilarPropertiesList();
+      window.map.renderAllPins(similarProperties);
+    }
+    window.map.enableMap();
+    window.form.enableAdForm();
+  }
+
+  window.map.disableMapFilter();
+  window.form.disableAdForm();
+  window.form.displayAddress();
+
+  mainPin.addEventListener('mousedown', onMainPinClick);
+  mainPin.addEventListener('keydown', onMainPinKeydown);
+
+})();
