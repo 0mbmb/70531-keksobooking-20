@@ -2,13 +2,6 @@
 
 (function () {
 
-  var TYPES = {
-    palace: 'Дворец',
-    house: 'Дом',
-    bungalo: 'Бунгало',
-    flat: 'Квартира'
-  };
-
   var mapContainer = document.querySelector('.map');
   var mapFilter = mapContainer.querySelector('.map__filters-container');
 
@@ -26,7 +19,7 @@
 
   function renderCardType(propertyCard, propertyData) {
     var typeElement = propertyCard.querySelector('.popup__type');
-    typeElement.textContent = propertyData.offer.type ? TYPES[propertyData.offer.type] : '';
+    typeElement.textContent = propertyData.offer.type ? window.data.TYPES[propertyData.offer.type] : '';
   }
 
   function renderCardAvatar(propertyCard, propertyData) {

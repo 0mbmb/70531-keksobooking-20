@@ -46,6 +46,17 @@
     }
   }
 
+  function getElementArea(element) {
+    var box = element.getBoundingClientRect();
+    return {
+      top: box.top + pageYOffset,
+      bottom: box.top + pageYOffset + box.height,
+      left: box.left + pageXOffset,
+      rigth: box.left + pageXOffset + box.width,
+      width: box.width
+    };
+  }
+
   window.util = {
     getRandomFromArray: getRandomFromArray,
     getRandomIntFromRange: getRandomIntFromRange,
@@ -53,7 +64,8 @@
     isMapActive: isMapActive,
     onEnterKeydown: onEnterKeydown,
     onEscKeydown: onEscKeydown,
-    onLeftMouseClick: onLeftMouseClick
+    onLeftMouseClick: onLeftMouseClick,
+    getElementArea: getElementArea
   };
 
 })();

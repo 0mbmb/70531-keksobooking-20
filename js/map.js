@@ -2,7 +2,22 @@
 
 (function () {
 
-  var PIN_SIZE = ['50', '70'];
+  var PIN_SIZE = {
+    width: 50,
+    height: 70
+  };
+  var MAIN_PIN_DEFAULT_SIZE = {
+    width: 64,
+    height: 64
+  };
+  var MAIN_PIN_ACTIVE_SIZE = {
+    width: 64,
+    height: 84
+  };
+  var MAP_AREA = {
+    yMin: 130,
+    yMax: 630
+  };
 
   var mapContainer = document.querySelector('.map');
 
@@ -15,13 +30,23 @@
 
   var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 
+  function getPinCoordinates() {
+    var xOffset = window.util.isMapActive() ? MAIN_PIN_ACTIVE_SIZE.width / 2 : MAIN_PIN_DEFAULT_SIZE.width / 2;
+    var yOffset = window.util.isMapActive() ? MAIN_PIN_ACTIVE_SIZE.height : MAIN_PIN_DEFAULT_SIZE.height / 2;
+
+    return {
+      x: parseInt(mainPin.style.left, 10) + xOffset,
+      y: parseInt(mainPin.style.top, 10) + yOffset
+    };
+  }
+
   function createSinglePin(propertyData) {
     var pin = pinTemplate.cloneNode(true);
     var pinImage = pin.querySelector('img');
 
     pin.classList.add('map__pin--similar');
-    pin.style.left = (propertyData.location.x - PIN_SIZE[0] / 2) + 'px';
-    pin.style.top = (propertyData.location.y - PIN_SIZE[1]) + 'px';
+    pin.style.left = (propertyData.location.x - PIN_SIZE.width / 2) + 'px';
+    pin.style.top = (propertyData.location.y - PIN_SIZE.height) + 'px';
     pinImage.src = propertyData.author.avatar ? propertyData.author.avatar : 'img/avatars/default.png';
     pinImage.alt = propertyData.offer.title;
     return pin;
@@ -84,6 +109,8 @@
   function onMainPinDrag(evt) {
     evt.preventDefault();
 
+    var mapArea = window.util.getElementArea(mapPins);
+
     var startCoord = {
       x: evt.clientX,
       y: evt.clientY
@@ -97,15 +124,38 @@
         y: moveEvt.clientY - startCoord.y
       };
 
-      mainPin.style.top = mainPin.offsetTop + delta.y + 'px';
-      mainPin.style.left = mainPin.offsetLeft + delta.x + 'px';
+      function isCursorOutside() {
+        if (
+          mainPin.offsetLeft + MAIN_PIN_ACTIVE_SIZE.width / 2 + delta.x < 0 ||
+          mainPin.offsetLeft + MAIN_PIN_ACTIVE_SIZE.width / 2 + delta.x > mapArea.width ||
+          mainPin.offsetTop + MAIN_PIN_ACTIVE_SIZE.height + delta.y < MAP_AREA.yMin ||
+          mainPin.offsetTop + MAIN_PIN_ACTIVE_SIZE.height + delta.y > MAP_AREA.yMax
+        ) {
+          return true;
+        }
+        return false;
+      }
 
+      if (isCursorOutside()) {
+        mainPin.style.left = mainPin.offsetLeft + 'px';
+        mainPin.style.top = mainPin.offsetTop + 'px';
+        startCoord = {
+          x: moveEvt.clientX - delta.x,
+          y: moveEvt.clientY - delta.y
+        };
+      } else {
+        mainPin.style.left = mainPin.offsetLeft + delta.x + 'px';
+        mainPin.style.top = mainPin.offsetTop + delta.y + 'px';
+        startCoord = {
+          x: moveEvt.clientX,
+          y: moveEvt.clientY
+        };
+      }
+      // есть пересечение подключаемых функций между map.js и form.js. такое допустимо,
+      // если подключить модуль, который использует подключаемую функцию в обработчике
+      // события (т.е. произойдет после загрузки всех модулей), ниже другого? либо
+      // стоит избавиться от пересечения, даже если придется продублировать код в одном из модулей?
       window.form.displayAddress();
-
-      startCoord = {
-        x: moveEvt.clientX,
-        y: moveEvt.clientY
-      };
     }
 
     function onMouseUp(upEvt) {
@@ -120,6 +170,7 @@
   }
 
   window.map = {
+    getPinCoordinates: getPinCoordinates,
     renderAllPins: renderAllPins,
     disableMapFilter: disableMapFilter,
     enableMap: enableMap,
