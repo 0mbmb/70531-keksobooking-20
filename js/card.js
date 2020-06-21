@@ -118,7 +118,6 @@
     var newCardClose = newCard.querySelector('.popup__close');
     mapContainer.insertBefore(newCard, mapFilter);
 
-    // ???
     function removeNewCard() {
       newCard.remove();
     }

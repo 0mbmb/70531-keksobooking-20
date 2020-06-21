@@ -6,6 +6,7 @@
 
   function onMainPinClick(evt) {
     window.util.onLeftMouseClick(evt, enablePage);
+    window.map.onMainPinDrag(evt);
   }
 
   function onMainPinKeydown(evt) {

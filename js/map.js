@@ -7,6 +7,7 @@
   var mapContainer = document.querySelector('.map');
 
   var mapPins = mapContainer.querySelector('.map__pins');
+  var mainPin = mapPins.querySelector('.map__pin--main');
 
   var mapFilter = mapContainer.querySelector('.map__filters-container');
   var mapFilterFieldsets = mapFilter.querySelectorAll('fieldset');
@@ -80,10 +81,49 @@
     enableMapFilter();
   }
 
+  function onMainPinDrag(evt) {
+    evt.preventDefault();
+
+    var startCoord = {
+      x: evt.clientX,
+      y: evt.clientY
+    };
+
+    function onMouseMove(moveEvt) {
+      moveEvt.preventDefault();
+
+      var delta = {
+        x: moveEvt.clientX - startCoord.x,
+        y: moveEvt.clientY - startCoord.y
+      };
+
+      mainPin.style.top = mainPin.offsetTop + delta.y + 'px';
+      mainPin.style.left = mainPin.offsetLeft + delta.x + 'px';
+
+      window.form.displayAddress();
+
+      startCoord = {
+        x: moveEvt.clientX,
+        y: moveEvt.clientY
+      };
+    }
+
+    function onMouseUp(upEvt) {
+      upEvt.preventDefault();
+
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    }
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  }
+
   window.map = {
     renderAllPins: renderAllPins,
     disableMapFilter: disableMapFilter,
-    enableMap: enableMap
+    enableMap: enableMap,
+    onMainPinDrag: onMainPinDrag
   };
 
 })();
