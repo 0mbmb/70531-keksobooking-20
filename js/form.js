@@ -17,11 +17,6 @@
   var adFormCheckin = adForm.querySelector('#timein');
   var adFormCheckout = adForm.querySelector('#timeout');
 
-  function displayAddress() {
-    var pinCoordinates = window.map.getPinCoordinates();
-    adFormAddress.value = pinCoordinates.x + ', ' + pinCoordinates.y;
-  }
-
   function validateGuests() {
     var currentRooms = parseInt(adFormRooms.value, 10);
     var currentCapacity = parseInt(adFormCapacity.value, 10);
@@ -114,7 +109,7 @@
   }
 
   function validateForm() {
-    displayAddress();
+    window.map.displayAddress();
     validateGuests();
     validateTitle();
     validatePrice();
@@ -133,13 +128,18 @@
     adFormType.removeEventListener('change', validatePrice);
     adFormCheckin.removeEventListener('change', validateCheckinCheckout);
     adFormCheckout.removeEventListener('change', validateCheckinCheckout);
+    adFormCapacity.removeEventListener('change', onCapacityChange);
+  }
+
+  function onCapacityChange() {
+    adFormCapacity.setCustomValidity('');
   }
 
   function enableAdForm() {
     for (var i = 0; i < adFormFieldsets.length; i++) {
       adFormFieldsets[i].removeAttribute('disabled');
     }
-    adFormAddress.setAttribute('disabled', true);
+    adFormAddress.setAttribute('readonly', true);
     adForm.classList.remove('ad-form--disabled');
 
     validateForm();
@@ -150,15 +150,10 @@
     adFormType.addEventListener('change', validatePrice);
     adFormCheckin.addEventListener('change', validateCheckinCheckout);
     adFormCheckout.addEventListener('change', validateCheckinCheckout);
-
-    // удалить этот обработчик:
-    adFormCapacity.addEventListener('change', function () {
-      adFormCapacity.setCustomValidity('');
-    });
+    adFormCapacity.addEventListener('change', onCapacityChange);
   }
 
   window.form = {
-    displayAddress: displayAddress,
     disableAdForm: disableAdForm,
     enableAdForm: enableAdForm
   };

@@ -28,6 +28,8 @@
   var mapFilterFieldsets = mapFilter.querySelectorAll('fieldset');
   var mapFilterSelects = mapFilter.querySelectorAll('select');
 
+  var adFormAddress = document.querySelector('input[name=address]');
+
   var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 
   function getPinCoordinates() {
@@ -38,6 +40,11 @@
       x: parseInt(mainPin.style.left, 10) + xOffset,
       y: parseInt(mainPin.style.top, 10) + yOffset
     };
+  }
+
+  function displayAddress() {
+    var pinCoordinates = getPinCoordinates();
+    adFormAddress.value = pinCoordinates.x + ', ' + pinCoordinates.y;
   }
 
   function createSinglePin(propertyData) {
@@ -125,15 +132,10 @@
       };
 
       function isCursorOutside() {
-        if (
-          mainPin.offsetLeft + MAIN_PIN_ACTIVE_SIZE.width / 2 + delta.x < 0 ||
+        return mainPin.offsetLeft + MAIN_PIN_ACTIVE_SIZE.width / 2 + delta.x < 0 ||
           mainPin.offsetLeft + MAIN_PIN_ACTIVE_SIZE.width / 2 + delta.x > mapArea.width ||
           mainPin.offsetTop + MAIN_PIN_ACTIVE_SIZE.height + delta.y < MAP_AREA.yMin ||
-          mainPin.offsetTop + MAIN_PIN_ACTIVE_SIZE.height + delta.y > MAP_AREA.yMax
-        ) {
-          return true;
-        }
-        return false;
+          mainPin.offsetTop + MAIN_PIN_ACTIVE_SIZE.height + delta.y > MAP_AREA.yMax;
       }
 
       if (isCursorOutside()) {
@@ -151,11 +153,7 @@
           y: moveEvt.clientY
         };
       }
-      // есть пересечение подключаемых функций между map.js и form.js. такое допустимо,
-      // если подключить модуль, который использует подключаемую функцию в обработчике
-      // события (т.е. произойдет после загрузки всех модулей), ниже другого? либо
-      // стоит избавиться от пересечения, даже если придется продублировать код в одном из модулей?
-      window.form.displayAddress();
+      displayAddress();
     }
 
     function onMouseUp(upEvt) {
@@ -170,7 +168,7 @@
   }
 
   window.map = {
-    getPinCoordinates: getPinCoordinates,
+    displayAddress: displayAddress,
     renderAllPins: renderAllPins,
     disableMapFilter: disableMapFilter,
     enableMap: enableMap,

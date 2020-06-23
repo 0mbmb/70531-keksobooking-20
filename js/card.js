@@ -7,9 +7,9 @@
 
   var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
 
-  function renderCardTextElement(propertyCard, propertyData, dataObjKey1, dataObjKey2, elementClass) {
+  function renderCardTextElement(propertyCard, propertyData, dataKey1, dataKey2, elementClass) {
     var textElement = propertyCard.querySelector('.' + elementClass);
-    textElement.textContent = propertyData[dataObjKey1][dataObjKey2] ? propertyData[dataObjKey1][dataObjKey2] : '';
+    textElement.textContent = propertyData[dataKey1][dataKey2] ? propertyData[dataKey1][dataKey2] : '';
   }
 
   function renderCardPrice(propertyCard, propertyData) {

@@ -24,7 +24,7 @@
 
   window.map.disableMapFilter();
   window.form.disableAdForm();
-  window.form.displayAddress();
+  window.map.displayAddress();
 
   mainPin.addEventListener('mousedown', onMainPinClick);
   mainPin.addEventListener('keydown', onMainPinKeydown);
