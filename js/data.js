@@ -44,7 +44,8 @@
   }
 
   window.data = {
-    createSimilarPropertiesList: createSimilarPropertiesList
+    createSimilarPropertiesList: createSimilarPropertiesList,
+    TYPES: TYPES
   };
 
 })();

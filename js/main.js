@@ -6,6 +6,7 @@
 
   function onMainPinClick(evt) {
     window.util.onLeftMouseClick(evt, enablePage);
+    window.map.onMainPinDrag(evt);
   }
 
   function onMainPinKeydown(evt) {
@@ -23,7 +24,7 @@
 
   window.map.disableMapFilter();
   window.form.disableAdForm();
-  window.form.displayAddress();
+  window.map.displayAddress();
 
   mainPin.addEventListener('mousedown', onMainPinClick);
   mainPin.addEventListener('keydown', onMainPinKeydown);

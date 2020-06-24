@@ -2,21 +2,14 @@
 
 (function () {
 
-  var TYPES = {
-    palace: 'Дворец',
-    house: 'Дом',
-    bungalo: 'Бунгало',
-    flat: 'Квартира'
-  };
-
   var mapContainer = document.querySelector('.map');
   var mapFilter = mapContainer.querySelector('.map__filters-container');
 
   var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
 
-  function renderCardTextElement(propertyCard, propertyData, dataObjKey1, dataObjKey2, elementClass) {
+  function renderCardTextElement(propertyCard, propertyData, dataKey1, dataKey2, elementClass) {
     var textElement = propertyCard.querySelector('.' + elementClass);
-    textElement.textContent = propertyData[dataObjKey1][dataObjKey2] ? propertyData[dataObjKey1][dataObjKey2] : '';
+    textElement.textContent = propertyData[dataKey1][dataKey2] ? propertyData[dataKey1][dataKey2] : '';
   }
 
   function renderCardPrice(propertyCard, propertyData) {
@@ -26,7 +19,7 @@
 
   function renderCardType(propertyCard, propertyData) {
     var typeElement = propertyCard.querySelector('.popup__type');
-    typeElement.textContent = propertyData.offer.type ? TYPES[propertyData.offer.type] : '';
+    typeElement.textContent = propertyData.offer.type ? window.data.TYPES[propertyData.offer.type] : '';
   }
 
   function renderCardAvatar(propertyCard, propertyData) {
@@ -118,7 +111,6 @@
     var newCardClose = newCard.querySelector('.popup__close');
     mapContainer.insertBefore(newCard, mapFilter);
 
-    // ???
     function removeNewCard() {
       newCard.remove();
     }
