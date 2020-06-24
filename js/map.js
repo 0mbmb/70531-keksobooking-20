@@ -85,6 +85,13 @@
     mapPins.appendChild(pinsFragment);
   }
 
+  function removeAllPins() {
+    var similarPins = mapPins.querySelectorAll('.map__pin--similar');
+    for (var i = 0; i < similarPins.length; i++) {
+      similarPins[i].remove();
+    }
+  }
+
   function disableMapFilter() {
     for (var i = 0; i < Math.max(mapFilterFieldsets.length, mapFilterSelects.length); i++) {
       if (mapFilterFieldsets[i]) {
@@ -111,6 +118,13 @@
     mapContainer.classList.remove('map--faded');
 
     enableMapFilter();
+  }
+
+  function disableMap() {
+    mapContainer.classList.add('map--faded');
+
+    disableMapFilter();
+    removeAllPins();
   }
 
   function onMainPinDrag(evt) {
@@ -172,6 +186,7 @@
     renderAllPins: renderAllPins,
     disableMapFilter: disableMapFilter,
     enableMap: enableMap,
+    disableMap: disableMap,
     onMainPinDrag: onMainPinDrag
   };
 

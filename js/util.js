@@ -2,6 +2,13 @@
 
 (function () {
 
+  var TYPES = {
+    palace: 'Дворец',
+    house: 'Дом',
+    bungalo: 'Бунгало',
+    flat: 'Квартира'
+  };
+
   function getRandomFromArray(array) {
     return array[Math.floor(Math.random() * array.length)];
   }
@@ -58,6 +65,7 @@
   }
 
   window.util = {
+    TYPES: TYPES,
     getRandomFromArray: getRandomFromArray,
     getRandomIntFromRange: getRandomIntFromRange,
     removeRandomItemsFromArray: removeRandomItemsFromArray,

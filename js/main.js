@@ -15,11 +15,10 @@
 
   function enablePage() {
     if (!window.util.isMapActive()) {
-      var similarProperties = window.data.createSimilarPropertiesList();
-      window.map.renderAllPins(similarProperties);
+      window.server.load(window.map.renderAllPins);
+      window.map.enableMap();
+      window.form.enableAdForm();
     }
-    window.map.enableMap();
-    window.form.enableAdForm();
   }
 
   window.map.disableMapFilter();

@@ -17,6 +17,14 @@
   var adFormCheckin = adForm.querySelector('#timein');
   var adFormCheckout = adForm.querySelector('#timeout');
 
+  // var adFormSubmit = adForm.querySelector('.ad-form__submit');
+  // var adFormReset = adForm.querySelector('.ad-form__reset');
+
+  var mainRoot = document.querySelector('main');
+
+  var successTemplate = document.querySelector('#success').content.querySelector('.success');
+  var errorTemplate = document.querySelector('#error').content.querySelector('.error');
+
   function validateGuests() {
     var currentRooms = parseInt(adFormRooms.value, 10);
     var currentCapacity = parseInt(adFormCapacity.value, 10);
@@ -87,7 +95,7 @@
     if (adFormPrice.validity.rangeOverflow) {
       adFormPrice.setCustomValidity('Максимальная цена: ' + PRICE_MAX);
     } else if (adFormPrice.validity.rangeUnderflow) {
-      adFormPrice.setCustomValidity('Минимальная цена для типа жилья «' + window.data.TYPES[adFormType.value].toLowerCase() + '»: ' + minPrice);
+      adFormPrice.setCustomValidity('Минимальная цена для типа жилья «' + window.util.TYPES[adFormType.value].toLowerCase() + '»: ' + minPrice);
     } else if (adFormPrice.validity.valueMissing) {
       adFormPrice.setCustomValidity('Обязательное поле');
     } else {
@@ -135,6 +143,64 @@
     adFormCapacity.setCustomValidity('');
   }
 
+  function onSubmitSuccess(successMessage) {
+    var successWindow = successTemplate.cloneNode(true);
+    var successMessageContainer = successWindow.querySelector('.success__message');
+    successWindow.setAttribute('tabindex', 0);
+    successMessageContainer.textContent = successMessage;
+    mainRoot.appendChild(successWindow);
+    successWindow.focus();
+
+    function closeSuccess() {
+      successWindow.remove();
+    }
+
+    function onSuccessEscape(evt) {
+      window.util.onEscKeydown(evt, closeSuccess);
+    }
+
+    function onSuccessClick(evt) {
+      window.util.onLeftMouseClick(evt, closeSuccess);
+    }
+
+    successWindow.addEventListener('keydown', onSuccessEscape);
+    successWindow.addEventListener('click', onSuccessClick);
+
+    disableAdForm();
+    window.map.disableMap();
+    adForm.reset();
+  }
+
+  function onSubmitError(errorMessage) {
+    var errorWindow = errorTemplate.cloneNode(true);
+    var errorMessageContainer = errorWindow.querySelector('.error__message');
+    var errorClose = errorWindow.querySelector('.error__button');
+    errorMessageContainer.textContent = errorMessage;
+    mainRoot.appendChild(errorWindow);
+    errorClose.focus();
+
+    function closeError() {
+      errorWindow.remove();
+    }
+
+    function onErrorEscape(evt) {
+      window.util.onEscKeydown(evt, closeError);
+    }
+
+    function onErrorClick(evt) {
+      window.util.onLeftMouseClick(evt, closeError);
+    }
+
+    errorWindow.addEventListener('keydown', onErrorEscape);
+    errorWindow.addEventListener('click', onErrorClick);
+  }
+
+  function onFormSubmit(evt) {
+    var formData = new FormData(adForm);
+    window.server.save(formData, onSubmitSuccess, onSubmitError);
+    evt.preventDefault();
+  }
+
   function enableAdForm() {
     for (var i = 0; i < adFormFieldsets.length; i++) {
       adFormFieldsets[i].removeAttribute('disabled');
@@ -151,6 +217,8 @@
     adFormCheckin.addEventListener('change', validateCheckinCheckout);
     adFormCheckout.addEventListener('change', validateCheckinCheckout);
     adFormCapacity.addEventListener('change', onCapacityChange);
+
+    adForm.addEventListener('submit', onFormSubmit);
   }
 
   window.form = {
