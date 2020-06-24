@@ -3,8 +3,9 @@
 (function () {
 
   var GET_URL = 'https://javascript.pages.academy/keksobooking/data';
+  var POST_URL = 'https://javascript.pages.academy/keksobooking';
   var TIMEOUT = 10000;
-  var statusCode = {
+  var StatusCode = {
     OK: 200
   };
 
@@ -21,7 +22,7 @@
     xhr.timeout = TIMEOUT;
 
     xhr.addEventListener('load', function () {
-      if (xhr.status === statusCode.OK) {
+      if (xhr.status === StatusCode.OK) {
         onSuccess(xhr.response);
       } else {
         onError('Статус ответа: ' + xhr.status + ' ' + xhr.statusText);
@@ -40,8 +41,34 @@
     xhr.send();
   }
 
+  function save(data, onSubmitSuccess, onSubmitError) {
+    var xhr = new XMLHttpRequest();
+    xhr.responseType = 'json';
+    xhr.timeout = TIMEOUT;
+
+    xhr.addEventListener('load', function () {
+      if (xhr.status === StatusCode.OK) {
+        onSubmitSuccess('Ваше объявление успешно размещено!');
+      } else {
+        onSubmitError('Статус ответа: ' + xhr.status + ' ' + xhr.statusText);
+      }
+    });
+
+    xhr.addEventListener('error', function () {
+      onSubmitError('Произошла ошибка соединения');
+    });
+
+    xhr.addEventListener('timeout', function () {
+      onSubmitError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
+    });
+
+    xhr.open('POST', POST_URL);
+    xhr.send(data);
+  }
+
   window.server = {
-    load: load
+    load: load,
+    save: save
   };
 
 })();
