@@ -6,6 +6,13 @@
   var TITLE_MAX_LENGTH = 100;
   var PRICE_MAX = 1000000;
 
+  var minPriceMap = {
+    'bungalo': 0,
+    'flat': 1000,
+    'house': 5000,
+    'palace': 10000
+  };
+
   var adForm = document.querySelector('.ad-form');
   var adFormFieldsets = adForm.querySelectorAll('fieldset');
   var adFormTitle = adForm.querySelector('#title');
@@ -16,9 +23,6 @@
   var adFormType = adForm.querySelector('#type');
   var adFormCheckin = adForm.querySelector('#timein');
   var adFormCheckout = adForm.querySelector('#timeout');
-
-  // var adFormSubmit = adForm.querySelector('.ad-form__submit');
-  // var adFormReset = adForm.querySelector('.ad-form__reset');
 
   var mainRoot = document.querySelector('main');
 
@@ -75,27 +79,15 @@
   function validatePrice() {
     var currentType = adFormType.value;
     var minPrice = 0;
-    switch (currentType) {
-      case 'bungalo':
-        minPrice = 0;
-        break;
-      case 'flat':
-        minPrice = 1000;
-        break;
-      case 'house':
-        minPrice = 5000;
-        break;
-      case 'palace':
-        minPrice = 10000;
-        break;
-    }
+    minPrice = minPriceMap[currentType];
+
     adFormPrice.setAttribute('min', minPrice);
     adFormPrice.setAttribute('placeholder', 'от ' + minPrice + ' руб.');
 
     if (adFormPrice.validity.rangeOverflow) {
       adFormPrice.setCustomValidity('Максимальная цена: ' + PRICE_MAX);
     } else if (adFormPrice.validity.rangeUnderflow) {
-      adFormPrice.setCustomValidity('Минимальная цена для типа жилья «' + window.util.TYPES[adFormType.value].toLowerCase() + '»: ' + minPrice);
+      adFormPrice.setCustomValidity('Минимальная цена для типа жилья «' + window.util.propertyTypeMap[adFormType.value].toLowerCase() + '»: ' + minPrice);
     } else if (adFormPrice.validity.valueMissing) {
       adFormPrice.setCustomValidity('Обязательное поле');
     } else {

@@ -19,7 +19,7 @@
 
   function renderCardType(propertyCard, propertyData) {
     var typeElement = propertyCard.querySelector('.popup__type');
-    typeElement.textContent = propertyData.offer.type ? window.util.TYPES[propertyData.offer.type] : '';
+    typeElement.textContent = propertyData.offer.type ? window.util.propertyTypeMap[propertyData.offer.type] : '';
   }
 
   function renderCardAvatar(propertyCard, propertyData) {
@@ -129,7 +129,8 @@
   }
 
   window.card = {
-    renderSingleCard: renderSingleCard
+    renderSingleCard: renderSingleCard,
+    removeAllCards: removeAllCards
   };
 
 })();
