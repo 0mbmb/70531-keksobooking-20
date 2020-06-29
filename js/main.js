@@ -3,7 +3,6 @@
 (function () {
 
   var mainPin = document.querySelector('.map__pin--main');
-  // var propertiesData = [];
 
   function onMainPinClick(evt) {
     window.util.onLeftMouseClick(evt, enablePage);
@@ -20,8 +19,11 @@
   }
 
   function enablePage() {
-    if (!window.util.isMapActive()) {
+    if (!enablePage.didrun) {
+      enablePage.didrun = true;
       window.server.load(onLoadSuccess);
+    }
+    if (!window.util.isMapActive()) {
       window.map.enableMap();
       window.form.enableAdForm();
     }

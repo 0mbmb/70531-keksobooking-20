@@ -24,6 +24,8 @@
   var adFormCheckin = adForm.querySelector('#timein');
   var adFormCheckout = adForm.querySelector('#timeout');
 
+  var adFormReset = adForm.querySelector('.ad-form__reset');
+
   var mainRoot = document.querySelector('main');
 
   var successTemplate = document.querySelector('#success').content.querySelector('.success');
@@ -108,12 +110,21 @@
     }
   }
 
+  function onCapacityChange() {
+    adFormCapacity.setCustomValidity('');
+  }
+
   function validateForm() {
-    window.map.displayAddress();
     validateGuests();
     validateTitle();
     validatePrice();
     validateCheckinCheckout();
+  }
+
+  function resetForm() {
+    disableAdForm();
+    adForm.reset();
+    window.map.disableMap();
   }
 
   function disableAdForm() {
@@ -129,10 +140,31 @@
     adFormCheckin.removeEventListener('change', validateCheckinCheckout);
     adFormCheckout.removeEventListener('change', validateCheckinCheckout);
     adFormCapacity.removeEventListener('change', onCapacityChange);
+
+    adFormReset.removeEventListener('click', resetForm);
   }
 
-  function onCapacityChange() {
-    adFormCapacity.setCustomValidity('');
+  function enableAdForm() {
+    for (var i = 0; i < adFormFieldsets.length; i++) {
+      adFormFieldsets[i].removeAttribute('disabled');
+    }
+    adFormAddress.setAttribute('readonly', true);
+    adForm.classList.remove('ad-form--disabled');
+
+    window.map.displayAddress();
+
+    validateForm();
+
+    adFormTitle.addEventListener('input', validateTitle);
+    adFormPrice.addEventListener('input', validatePrice);
+    adFormRooms.addEventListener('change', validateGuests);
+    adFormType.addEventListener('change', validatePrice);
+    adFormCheckin.addEventListener('change', validateCheckinCheckout);
+    adFormCheckout.addEventListener('change', validateCheckinCheckout);
+    adFormCapacity.addEventListener('change', onCapacityChange);
+
+    adForm.addEventListener('submit', onFormSubmit);
+    adFormReset.addEventListener('click', resetForm);
   }
 
   function onSubmitSuccess(successMessage) {
@@ -158,9 +190,7 @@
     successWindow.addEventListener('keydown', onSuccessEscape);
     successWindow.addEventListener('click', onSuccessClick);
 
-    disableAdForm();
-    window.map.disableMap();
-    adForm.reset();
+    resetForm();
   }
 
   function onSubmitError(errorMessage) {
@@ -191,26 +221,6 @@
     var formData = new FormData(adForm);
     window.server.save(formData, onSubmitSuccess, onSubmitError);
     evt.preventDefault();
-  }
-
-  function enableAdForm() {
-    for (var i = 0; i < adFormFieldsets.length; i++) {
-      adFormFieldsets[i].removeAttribute('disabled');
-    }
-    adFormAddress.setAttribute('readonly', true);
-    adForm.classList.remove('ad-form--disabled');
-
-    validateForm();
-
-    adFormTitle.addEventListener('input', validateTitle);
-    adFormPrice.addEventListener('input', validatePrice);
-    adFormRooms.addEventListener('change', validateGuests);
-    adFormType.addEventListener('change', validatePrice);
-    adFormCheckin.addEventListener('change', validateCheckinCheckout);
-    adFormCheckout.addEventListener('change', validateCheckinCheckout);
-    adFormCapacity.addEventListener('change', onCapacityChange);
-
-    adForm.addEventListener('submit', onFormSubmit);
   }
 
   window.form = {

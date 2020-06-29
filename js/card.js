@@ -98,6 +98,13 @@
     return propertyCard;
   }
 
+  function deactivateAllPins() {
+    var similarPins = mapContainer.querySelectorAll('.map__pin--similar');
+    for (var i = 0; i < similarPins.length; i++) {
+      similarPins[i].classList.remove('map__pin--active');
+    }
+  }
+
   function removeAllCards() {
     var allCards = mapContainer.querySelectorAll('.map__card');
     for (var i = 0; i < allCards.length; i++) {
@@ -113,6 +120,7 @@
 
     function removeNewCard() {
       newCard.remove();
+      deactivateAllPins();
     }
 
     newCardClose.addEventListener('click', function (evt) {
@@ -130,7 +138,8 @@
 
   window.card = {
     renderSingleCard: renderSingleCard,
-    removeAllCards: removeAllCards
+    removeAllCards: removeAllCards,
+    deactivateAllPins: deactivateAllPins
   };
 
 })();
