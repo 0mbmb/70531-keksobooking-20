@@ -2,11 +2,11 @@
 
 (function () {
 
-  var TYPES = {
-    palace: 'Дворец',
-    house: 'Дом',
-    bungalo: 'Бунгало',
-    flat: 'Квартира'
+  var propertyTypeMap = {
+    'palace': 'Дворец',
+    'house': 'Дом',
+    'bungalo': 'Бунгало',
+    'flat': 'Квартира'
   };
 
   function getRandomFromArray(array) {
@@ -65,7 +65,7 @@
   }
 
   window.util = {
-    TYPES: TYPES,
+    propertyTypeMap: propertyTypeMap,
     getRandomFromArray: getRandomFromArray,
     getRandomIntFromRange: getRandomIntFromRange,
     removeRandomItemsFromArray: removeRandomItemsFromArray,

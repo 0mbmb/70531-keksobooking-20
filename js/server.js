@@ -8,6 +8,7 @@
   var StatusCode = {
     OK: 200
   };
+  var propertiesData = [];
 
   function onError(errorMessage) {
     var node = document.createElement('div');
@@ -68,7 +69,8 @@
 
   window.server = {
     load: load,
-    save: save
+    save: save,
+    propertiesData: propertiesData
   };
 
 })();

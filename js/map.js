@@ -18,15 +18,12 @@
     yMin: 130,
     yMax: 630
   };
+  var MAX_NUMBER_OF_PINS = 5;
 
   var mapContainer = document.querySelector('.map');
 
   var mapPins = mapContainer.querySelector('.map__pins');
   var mainPin = mapPins.querySelector('.map__pin--main');
-
-  var mapFilter = mapContainer.querySelector('.map__filters-container');
-  var mapFilterFieldsets = mapFilter.querySelectorAll('fieldset');
-  var mapFilterSelects = mapFilter.querySelectorAll('select');
 
   var adFormAddress = document.querySelector('input[name=address]');
 
@@ -73,9 +70,17 @@
     });
   }
 
+  function removeAllPins() {
+    var similarPins = mapPins.querySelectorAll('.map__pin--similar');
+    for (var i = 0; i < similarPins.length; i++) {
+      similarPins[i].remove();
+    }
+  }
+
   function renderAllPins(propertiesData) {
+    removeAllPins();
     var pinsFragment = document.createDocumentFragment();
-    for (var i = 0; i < propertiesData.length; i++) {
+    for (var i = 0; i < Math.min(propertiesData.length, MAX_NUMBER_OF_PINS); i++) {
       var similarPropertyPin = createSinglePin(propertiesData[i]);
       // similarPropertyPin.setAttribute('data-id', i);
       pinsFragment.appendChild(similarPropertyPin);
@@ -85,45 +90,16 @@
     mapPins.appendChild(pinsFragment);
   }
 
-  function removeAllPins() {
-    var similarPins = mapPins.querySelectorAll('.map__pin--similar');
-    for (var i = 0; i < similarPins.length; i++) {
-      similarPins[i].remove();
-    }
-  }
-
-  function disableMapFilter() {
-    for (var i = 0; i < Math.max(mapFilterFieldsets.length, mapFilterSelects.length); i++) {
-      if (mapFilterFieldsets[i]) {
-        mapFilterFieldsets[i].setAttribute('disabled', true);
-      }
-      if (mapFilterSelects[i]) {
-        mapFilterSelects[i].setAttribute('disabled', true);
-      }
-    }
-  }
-
-  function enableMapFilter() {
-    for (var i = 0; i < Math.max(mapFilterFieldsets.length, mapFilterSelects.length); i++) {
-      if (mapFilterFieldsets[i]) {
-        mapFilterFieldsets[i].removeAttribute('disabled');
-      }
-      if (mapFilterSelects[i]) {
-        mapFilterSelects[i].removeAttribute('disabled');
-      }
-    }
-  }
-
   function enableMap() {
     mapContainer.classList.remove('map--faded');
 
-    enableMapFilter();
+    window.filter.enableMapFilter();
   }
 
   function disableMap() {
     mapContainer.classList.add('map--faded');
 
-    disableMapFilter();
+    window.filter.disableMapFilter();
     removeAllPins();
   }
 
@@ -184,7 +160,6 @@
   window.map = {
     displayAddress: displayAddress,
     renderAllPins: renderAllPins,
-    disableMapFilter: disableMapFilter,
     enableMap: enableMap,
     disableMap: disableMap,
     onMainPinDrag: onMainPinDrag
