@@ -65,14 +65,11 @@
   }
 
   function compareArrayToArray(firstArray, secondArray) {
-    if (firstArray.length === 0) {
-      return true;
-    }
-    var containsAll = true;
+    var contains = true;
     for (var i = 0; i < Math.min(firstArray.length, secondArray.length); i++) {
-      containsAll *= secondArray.includes(firstArray[i]);
+      contains = contains && secondArray.includes(firstArray[i]);
     }
-    return Boolean(containsAll) && (firstArray.length <= secondArray.length);
+    return firstArray.length === 0 || contains && (firstArray.length <= secondArray.length);
   }
 
   window.util = {

@@ -35,6 +35,7 @@
     var currentRooms = parseInt(adFormRooms.value, 10);
     var currentCapacity = parseInt(adFormCapacity.value, 10);
 
+    // Д26
     for (var i = 0; i < adFormCapacity.length; i++) {
       var capacityItem = parseInt(adFormCapacity[i].value, 10);
       if (currentRooms === 100 && capacityItem === 0) {
@@ -122,15 +123,16 @@
   }
 
   function resetForm() {
-    disableAdForm();
+    disable();
     adForm.reset();
-    window.map.disableMap();
+    window.map.disable();
   }
 
-  function disableAdForm() {
-    for (var i = 0; i < adFormFieldsets.length; i++) {
-      adFormFieldsets[i].setAttribute('disabled', true);
-    }
+  function disable() {
+    adFormFieldsets.forEach(function (fieldset) {
+      fieldset.setAttribute('disabled', true);
+    });
+
     adForm.classList.add('ad-form--disabled');
 
     adFormTitle.removeEventListener('input', validateTitle);
@@ -144,10 +146,11 @@
     adFormReset.removeEventListener('click', resetForm);
   }
 
-  function enableAdForm() {
-    for (var i = 0; i < adFormFieldsets.length; i++) {
-      adFormFieldsets[i].removeAttribute('disabled');
-    }
+  function enable() {
+    adFormFieldsets.forEach(function (fieldset) {
+      fieldset.removeAttribute('disabled');
+    });
+
     adFormAddress.setAttribute('readonly', true);
     adForm.classList.remove('ad-form--disabled');
 
@@ -157,8 +160,11 @@
 
     adFormTitle.addEventListener('input', validateTitle);
     adFormPrice.addEventListener('input', validatePrice);
-    adFormRooms.addEventListener('change', validateGuests);
+
+    // Д4: название коллбека onTypeChange?
     adFormType.addEventListener('change', validatePrice);
+    adFormRooms.addEventListener('change', validateGuests);
+    // Д24: отдельные коллбеки?
     adFormCheckin.addEventListener('change', validateCheckinCheckout);
     adFormCheckout.addEventListener('change', validateCheckinCheckout);
     adFormCapacity.addEventListener('change', onCapacityChange);
@@ -224,8 +230,8 @@
   }
 
   window.form = {
-    disableAdForm: disableAdForm,
-    enableAdForm: enableAdForm
+    disable: disable,
+    enable: enable
   };
 
 })();

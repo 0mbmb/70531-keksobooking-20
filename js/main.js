@@ -9,7 +9,7 @@
     window.map.onMainPinDrag(evt);
   }
 
-  function onMainPinKeydown(evt) {
+  function onMainPinEnter(evt) {
     window.util.onEnterKeydown(evt, enablePage);
   }
 
@@ -24,16 +24,16 @@
       window.server.load(onLoadSuccess);
     }
     if (!window.util.isMapActive()) {
-      window.map.enableMap();
-      window.form.enableAdForm();
+      window.map.enable();
+      window.form.enable();
     }
   }
 
-  window.filter.disableMapFilter();
-  window.form.disableAdForm();
+  window.filter.disable();
+  window.form.disable();
   window.map.displayAddress();
 
   mainPin.addEventListener('mousedown', onMainPinClick);
-  mainPin.addEventListener('keydown', onMainPinKeydown);
+  mainPin.addEventListener('keydown', onMainPinEnter);
 
 })();

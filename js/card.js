@@ -12,6 +12,7 @@
     textElement.textContent = propertyData[dataKey1][dataKey2] ? propertyData[dataKey1][dataKey2] : '';
   }
 
+  // Б27?
   function renderCardPrice(propertyCard, propertyData) {
     var priceElement = propertyCard.querySelector('.popup__text--price');
     priceElement.innerHTML = propertyData.offer.price ? propertyData.offer.price + ' \u20BD<span>/ночь</span>' : '';
@@ -55,16 +56,13 @@
 
   function renderCardFeatures(propertyCard, propertyData) {
     var featuresList = propertyCard.querySelector('.popup__features');
-    var features = propertyCard.querySelectorAll('.popup__feature');
-
     var featuresFragment = document.createDocumentFragment();
-    for (var i = 0; i < features.length; i++) {
-      var feature = featuresList.querySelector('.popup__feature--' + propertyData.offer.features[i]);
-      if (feature) {
-        featuresFragment.appendChild(feature.cloneNode());
-      }
-      features[i].remove();
-    }
+
+    propertyData.offer.features.forEach(function (feature) {
+      var currentFeature = featuresList.querySelector('.popup__feature--' + feature).cloneNode();
+      featuresFragment.appendChild(currentFeature);
+    });
+    featuresList.innerHTML = '';
     featuresList.appendChild(featuresFragment);
   }
 
@@ -100,19 +98,19 @@
 
   function deactivateAllPins() {
     var similarPins = mapContainer.querySelectorAll('.map__pin--similar');
-    for (var i = 0; i < similarPins.length; i++) {
-      similarPins[i].classList.remove('map__pin--active');
-    }
+    similarPins.forEach(function (pin) {
+      pin.classList.remove('map__pin--active');
+    });
   }
 
   function removeAllCards() {
     var allCards = mapContainer.querySelectorAll('.map__card');
-    for (var i = 0; i < allCards.length; i++) {
-      allCards[i].remove();
-    }
+    allCards.forEach(function (card) {
+      card.remove();
+    });
   }
 
-  function renderSingleCard(propertyData) {
+  function render(propertyData) {
     removeAllCards();
     var newCard = createSinglePropertyCard(propertyData);
     var newCardClose = newCard.querySelector('.popup__close');
@@ -137,7 +135,7 @@
   }
 
   window.card = {
-    renderSingleCard: renderSingleCard,
+    render: render,
     removeAllCards: removeAllCards,
     deactivateAllPins: deactivateAllPins
   };

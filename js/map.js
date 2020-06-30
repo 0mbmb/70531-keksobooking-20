@@ -2,6 +2,7 @@
 
 (function () {
 
+  // так нормально по критериям?
   var PIN_SIZE = {
     width: 50,
     height: 70
@@ -68,7 +69,7 @@
 
   function onPinClickEnter(pin, propertyData) {
     function onPinClick() {
-      window.card.renderSingleCard(propertyData);
+      window.card.render(propertyData);
       window.card.deactivateAllPins();
       pin.classList.add('map__pin--active');
     }
@@ -84,9 +85,9 @@
 
   function removeAllPins() {
     var similarPins = mapPins.querySelectorAll('.map__pin--similar');
-    for (var i = 0; i < similarPins.length; i++) {
-      similarPins[i].remove();
-    }
+    similarPins.forEach(function (pin) {
+      pin.remove();
+    });
   }
 
 
@@ -96,7 +97,6 @@
     for (var i = 0; i < Math.min(propertiesData.length, MAX_NUMBER_OF_PINS); i++) {
       if (propertiesData[i].offer) {
         var similarPropertyPin = createSinglePin(propertiesData[i]);
-        // similarPropertyPin.setAttribute('data-id', i);
         pinsFragment.appendChild(similarPropertyPin);
 
         onPinClickEnter(similarPropertyPin, propertiesData[i]);
@@ -105,16 +105,16 @@
     mapPins.appendChild(pinsFragment);
   }
 
-  function enableMap() {
+  function enable() {
     mapContainer.classList.remove('map--faded');
 
-    window.filter.enableMapFilter();
+    window.filter.enable();
   }
 
-  function disableMap() {
+  function disable() {
     mapContainer.classList.add('map--faded');
 
-    window.filter.disableMapFilter();
+    window.filter.disable();
     window.card.removeAllCards();
     removeAllPins();
     moveMainPinToDefault();
@@ -179,8 +179,8 @@
     displayAddress: displayAddress,
     renderAllPins: renderAllPins,
     removeAllPins: removeAllPins,
-    enableMap: enableMap,
-    disableMap: disableMap,
+    enable: enable,
+    disable: disable,
     onMainPinDrag: onMainPinDrag
   };
 

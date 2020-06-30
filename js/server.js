@@ -8,6 +8,7 @@
   var StatusCode = {
     OK: 200
   };
+
   var propertiesData = [];
 
   function onError(errorMessage) {
