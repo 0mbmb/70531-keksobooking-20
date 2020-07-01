@@ -5,6 +5,7 @@
   var TITLE_MIN_LENGTH = 30;
   var TITLE_MAX_LENGTH = 100;
   var PRICE_MAX = 1000000;
+  var IMAGE_FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 
   var minPriceMap = {
     'bungalo': 0,
@@ -15,6 +16,10 @@
 
   var adForm = document.querySelector('.ad-form');
   var adFormFieldsets = adForm.querySelectorAll('fieldset');
+
+  var adFormAvatar = adForm.querySelector('.ad-form-header__preview img');
+  var adFormAvatarInput = adForm.querySelector('.ad-form-header__input');
+
   var adFormTitle = adForm.querySelector('#title');
   var adFormPrice = adForm.querySelector('#price');
   var adFormAddress = adForm.querySelector('input[name=address]');
@@ -23,6 +28,10 @@
   var adFormType = adForm.querySelector('#type');
   var adFormCheckin = adForm.querySelector('#timein');
   var adFormCheckout = adForm.querySelector('#timeout');
+
+  var adFormImageContainer = adForm.querySelector('.ad-form__photo-container');
+  var adFormImageTemplate = adForm.querySelector('.ad-form__photo');
+  var adFormImageInput = adForm.querySelector('.ad-form__input');
 
   var adFormReset = adForm.querySelector('.ad-form__reset');
 
@@ -128,6 +137,49 @@
     window.map.disable();
   }
 
+  function onAvatarChange() {
+    var file = adFormAvatarInput.files[0];
+    var fileName = file.name.toLowerCase();
+
+    var matches = IMAGE_FILE_TYPES.some(function (item) {
+      return fileName.endsWith(item);
+    });
+
+    if (matches) {
+      var reader = new FileReader();
+
+      reader.addEventListener('load', function () {
+        adFormAvatar.src = reader.result;
+      });
+
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function onImageChange() {
+    var file = adFormImageInput.files[0];
+    var fileName = file.name.toLowerCase();
+
+    var matches = IMAGE_FILE_TYPES.some(function (item) {
+      return fileName.endsWith(item);
+    });
+
+    if (matches) {
+      var reader = new FileReader();
+
+      reader.addEventListener('load', function () {
+        var newImageContainer = adFormImageTemplate.cloneNode(true);
+        var newImage = newImageContainer.querySelector('img');
+        newImage.src = reader.result;
+        newImage.style.width = '100%';
+        adFormImageContainer.appendChild(newImageContainer);
+        adFormImageTemplate.remove();
+      });
+
+      reader.readAsDataURL(file);
+    }
+  }
+
   function disable() {
     adFormFieldsets.forEach(function (fieldset) {
       fieldset.setAttribute('disabled', true);
@@ -135,6 +187,7 @@
 
     adForm.classList.add('ad-form--disabled');
 
+    adFormAvatarInput.removeEventListener('change', onAvatarChange);
     adFormTitle.removeEventListener('input', validateTitle);
     adFormPrice.removeEventListener('input', validatePrice);
     adFormRooms.removeEventListener('change', validateGuests);
@@ -142,6 +195,7 @@
     adFormCheckin.removeEventListener('change', validateCheckinCheckout);
     adFormCheckout.removeEventListener('change', validateCheckinCheckout);
     adFormCapacity.removeEventListener('change', onCapacityChange);
+    adFormImageInput.removeEventListener('change', onImageChange);
 
     adFormReset.removeEventListener('click', resetForm);
   }
@@ -158,6 +212,8 @@
 
     validateForm();
 
+    adFormAvatarInput.addEventListener('change', onAvatarChange);
+
     adFormTitle.addEventListener('input', validateTitle);
     adFormPrice.addEventListener('input', validatePrice);
 
@@ -168,6 +224,8 @@
     adFormCheckin.addEventListener('change', validateCheckinCheckout);
     adFormCheckout.addEventListener('change', validateCheckinCheckout);
     adFormCapacity.addEventListener('change', onCapacityChange);
+
+    adFormImageInput.addEventListener('change', onImageChange);
 
     adForm.addEventListener('submit', onFormSubmit);
     adFormReset.addEventListener('click', resetForm);
