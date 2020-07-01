@@ -12,7 +12,6 @@
     textElement.textContent = propertyData[dataKey1][dataKey2] ? propertyData[dataKey1][dataKey2] : '';
   }
 
-  // Б27?
   function renderCardPrice(propertyCard, propertyData) {
     var priceElement = propertyCard.querySelector('.popup__text--price');
     priceElement.innerHTML = propertyData.offer.price ? propertyData.offer.price + ' \u20BD<span>/ночь</span>' : '';

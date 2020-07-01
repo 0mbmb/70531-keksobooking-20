@@ -2,7 +2,6 @@
 
 (function () {
 
-  // так нормально по критериям?
   var PIN_SIZE = {
     width: 50,
     height: 70
@@ -89,7 +88,6 @@
       pin.remove();
     });
   }
-
 
   function renderAllPins(propertiesData) {
     removeAllPins();

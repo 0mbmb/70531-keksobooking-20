@@ -44,7 +44,6 @@
     var currentRooms = parseInt(adFormRooms.value, 10);
     var currentCapacity = parseInt(adFormCapacity.value, 10);
 
-    // Д26
     for (var i = 0; i < adFormCapacity.length; i++) {
       var capacityItem = parseInt(adFormCapacity[i].value, 10);
       if (currentRooms === 100 && capacityItem === 0) {
@@ -196,7 +195,6 @@
     adFormCheckout.removeEventListener('change', validateCheckinCheckout);
     adFormCapacity.removeEventListener('change', onCapacityChange);
     adFormImageInput.removeEventListener('change', onImageChange);
-
     adFormReset.removeEventListener('click', resetForm);
   }
 
@@ -213,22 +211,17 @@
     validateForm();
 
     adFormAvatarInput.addEventListener('change', onAvatarChange);
-
     adFormTitle.addEventListener('input', validateTitle);
     adFormPrice.addEventListener('input', validatePrice);
-
-    // Д4: название коллбека onTypeChange?
     adFormType.addEventListener('change', validatePrice);
     adFormRooms.addEventListener('change', validateGuests);
-    // Д24: отдельные коллбеки?
     adFormCheckin.addEventListener('change', validateCheckinCheckout);
     adFormCheckout.addEventListener('change', validateCheckinCheckout);
     adFormCapacity.addEventListener('change', onCapacityChange);
-
     adFormImageInput.addEventListener('change', onImageChange);
+    adFormReset.addEventListener('click', resetForm);
 
     adForm.addEventListener('submit', onFormSubmit);
-    adFormReset.addEventListener('click', resetForm);
   }
 
   function onSubmitSuccess(successMessage) {

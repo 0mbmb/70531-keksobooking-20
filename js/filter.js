@@ -89,7 +89,6 @@
     return window.util.compareArrayToArray(currentFeatures, item.offer.features);
   }
 
-  // проверить debounce
   function filterAll() {
     window.debounce(function () {
       var filteredData = window.server.propertiesData
