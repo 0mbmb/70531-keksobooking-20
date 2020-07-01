@@ -64,6 +64,14 @@
     };
   }
 
+  function compareArrayToArray(firstArray, secondArray) {
+    var contains = true;
+    for (var i = 0; i < Math.min(firstArray.length, secondArray.length); i++) {
+      contains = contains && secondArray.includes(firstArray[i]);
+    }
+    return firstArray.length === 0 || contains && (firstArray.length <= secondArray.length);
+  }
+
   window.util = {
     propertyTypeMap: propertyTypeMap,
     getRandomFromArray: getRandomFromArray,
@@ -73,7 +81,8 @@
     onEnterKeydown: onEnterKeydown,
     onEscKeydown: onEscKeydown,
     onLeftMouseClick: onLeftMouseClick,
-    getElementArea: getElementArea
+    getElementArea: getElementArea,
+    compareArrayToArray: compareArrayToArray
   };
 
 })();

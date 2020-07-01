@@ -3,14 +3,13 @@
 (function () {
 
   var mainPin = document.querySelector('.map__pin--main');
-  // var propertiesData = [];
 
   function onMainPinClick(evt) {
     window.util.onLeftMouseClick(evt, enablePage);
     window.map.onMainPinDrag(evt);
   }
 
-  function onMainPinKeydown(evt) {
+  function onMainPinEnter(evt) {
     window.util.onEnterKeydown(evt, enablePage);
   }
 
@@ -20,18 +19,21 @@
   }
 
   function enablePage() {
-    if (!window.util.isMapActive()) {
+    if (!enablePage.didrun) {
+      enablePage.didrun = true;
       window.server.load(onLoadSuccess);
-      window.map.enableMap();
-      window.form.enableAdForm();
+    }
+    if (!window.util.isMapActive()) {
+      window.map.enable();
+      window.form.enable();
     }
   }
 
-  window.filter.disableMapFilter();
-  window.form.disableAdForm();
+  window.filter.disable();
+  window.form.disable();
   window.map.displayAddress();
 
   mainPin.addEventListener('mousedown', onMainPinClick);
-  mainPin.addEventListener('keydown', onMainPinKeydown);
+  mainPin.addEventListener('keydown', onMainPinEnter);
 
 })();

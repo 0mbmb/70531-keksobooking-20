@@ -55,16 +55,13 @@
 
   function renderCardFeatures(propertyCard, propertyData) {
     var featuresList = propertyCard.querySelector('.popup__features');
-    var features = propertyCard.querySelectorAll('.popup__feature');
-
     var featuresFragment = document.createDocumentFragment();
-    for (var i = 0; i < features.length; i++) {
-      var feature = featuresList.querySelector('.popup__feature--' + propertyData.offer.features[i]);
-      if (feature) {
-        featuresFragment.appendChild(feature.cloneNode());
-      }
-      features[i].remove();
-    }
+
+    propertyData.offer.features.forEach(function (feature) {
+      var currentFeature = featuresList.querySelector('.popup__feature--' + feature).cloneNode();
+      featuresFragment.appendChild(currentFeature);
+    });
+    featuresList.innerHTML = '';
     featuresList.appendChild(featuresFragment);
   }
 
@@ -98,14 +95,21 @@
     return propertyCard;
   }
 
-  function removeAllCards() {
-    var allCards = mapContainer.querySelectorAll('.map__card');
-    for (var i = 0; i < allCards.length; i++) {
-      allCards[i].remove();
-    }
+  function deactivateAllPins() {
+    var similarPins = mapContainer.querySelectorAll('.map__pin--similar');
+    similarPins.forEach(function (pin) {
+      pin.classList.remove('map__pin--active');
+    });
   }
 
-  function renderSingleCard(propertyData) {
+  function removeAllCards() {
+    var allCards = mapContainer.querySelectorAll('.map__card');
+    allCards.forEach(function (card) {
+      card.remove();
+    });
+  }
+
+  function render(propertyData) {
     removeAllCards();
     var newCard = createSinglePropertyCard(propertyData);
     var newCardClose = newCard.querySelector('.popup__close');
@@ -113,6 +117,7 @@
 
     function removeNewCard() {
       newCard.remove();
+      deactivateAllPins();
     }
 
     newCardClose.addEventListener('click', function (evt) {
@@ -129,8 +134,9 @@
   }
 
   window.card = {
-    renderSingleCard: renderSingleCard,
-    removeAllCards: removeAllCards
+    render: render,
+    removeAllCards: removeAllCards,
+    deactivateAllPins: deactivateAllPins
   };
 
 })();

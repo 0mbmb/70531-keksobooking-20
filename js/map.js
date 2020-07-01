@@ -25,6 +25,16 @@
   var mapPins = mapContainer.querySelector('.map__pins');
   var mainPin = mapPins.querySelector('.map__pin--main');
 
+  var mainPinDefaultCoords = {
+    top: mainPin.style.top,
+    left: mainPin.style.left
+  };
+
+  function moveMainPinToDefault() {
+    mainPin.style.top = mainPinDefaultCoords.top;
+    mainPin.style.left = mainPinDefaultCoords.left;
+  }
+
   var adFormAddress = document.querySelector('input[name=address]');
 
   var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
@@ -57,50 +67,56 @@
   }
 
   function onPinClickEnter(pin, propertyData) {
-    function onPinRenderCard() {
-      window.card.renderSingleCard(propertyData);
+    function onPinClick() {
+      window.card.render(propertyData);
+      window.card.deactivateAllPins();
+      pin.classList.add('map__pin--active');
     }
 
     pin.addEventListener('click', function (evt) {
-      window.util.onLeftMouseClick(evt, onPinRenderCard);
+      window.util.onLeftMouseClick(evt, onPinClick);
     });
 
     pin.addEventListener('keydown', function (evt) {
-      window.util.onEnterKeydown(evt, onPinRenderCard);
+      window.util.onEnterKeydown(evt, onPinClick);
     });
   }
 
   function removeAllPins() {
     var similarPins = mapPins.querySelectorAll('.map__pin--similar');
-    for (var i = 0; i < similarPins.length; i++) {
-      similarPins[i].remove();
-    }
+    similarPins.forEach(function (pin) {
+      pin.remove();
+    });
   }
 
   function renderAllPins(propertiesData) {
     removeAllPins();
     var pinsFragment = document.createDocumentFragment();
     for (var i = 0; i < Math.min(propertiesData.length, MAX_NUMBER_OF_PINS); i++) {
-      var similarPropertyPin = createSinglePin(propertiesData[i]);
-      // similarPropertyPin.setAttribute('data-id', i);
-      pinsFragment.appendChild(similarPropertyPin);
+      if (propertiesData[i].offer) {
+        var similarPropertyPin = createSinglePin(propertiesData[i]);
+        pinsFragment.appendChild(similarPropertyPin);
 
-      onPinClickEnter(similarPropertyPin, propertiesData[i]);
+        onPinClickEnter(similarPropertyPin, propertiesData[i]);
+      }
     }
     mapPins.appendChild(pinsFragment);
   }
 
-  function enableMap() {
+  function enable() {
     mapContainer.classList.remove('map--faded');
 
-    window.filter.enableMapFilter();
+    window.filter.enable();
   }
 
-  function disableMap() {
+  function disable() {
     mapContainer.classList.add('map--faded');
 
-    window.filter.disableMapFilter();
+    window.filter.disable();
+    window.card.removeAllCards();
     removeAllPins();
+    moveMainPinToDefault();
+    displayAddress();
   }
 
   function onMainPinDrag(evt) {
@@ -160,8 +176,9 @@
   window.map = {
     displayAddress: displayAddress,
     renderAllPins: renderAllPins,
-    enableMap: enableMap,
-    disableMap: disableMap,
+    removeAllPins: removeAllPins,
+    enable: enable,
+    disable: disable,
     onMainPinDrag: onMainPinDrag
   };
 
