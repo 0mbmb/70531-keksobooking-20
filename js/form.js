@@ -14,113 +14,116 @@
     'palace': 10000
   };
 
-  var adForm = document.querySelector('.ad-form');
-  var adFormFieldsets = adForm.querySelectorAll('fieldset');
+  var form = document.querySelector('.ad-form');
+  var formFieldsets = form.querySelectorAll('fieldset');
 
-  var adFormAvatar = adForm.querySelector('.ad-form-header__preview img');
-  var adFormAvatarInput = adForm.querySelector('.ad-form-header__input');
+  var formAvatar = form.querySelector('.ad-form-header__preview img');
+  var avatarDefaultImg = formAvatar.src;
+  var formAvatarInput = form.querySelector('.ad-form-header__input');
 
-  var adFormTitle = adForm.querySelector('#title');
-  var adFormPrice = adForm.querySelector('#price');
-  var adFormAddress = adForm.querySelector('input[name=address]');
-  var adFormRooms = adForm.querySelector('#room_number');
-  var adFormCapacity = adForm.querySelector('#capacity');
-  var adFormType = adForm.querySelector('#type');
-  var adFormCheckin = adForm.querySelector('#timein');
-  var adFormCheckout = adForm.querySelector('#timeout');
+  var formTitle = form.querySelector('#title');
+  var formPrice = form.querySelector('#price');
+  var formAddress = form.querySelector('input[name=address]');
+  var formRooms = form.querySelector('#room_number');
+  var formCapacity = form.querySelector('#capacity');
+  var formType = form.querySelector('#type');
+  var formCheckin = form.querySelector('#timein');
+  var formCheckout = form.querySelector('#timeout');
+  var checkoutOptions = Array.from(formCheckout.options);
+  var checkinOptions = Array.from(formCheckin.options);
 
-  var adFormImageContainer = adForm.querySelector('.ad-form__photo-container');
-  var adFormImageTemplate = adForm.querySelector('.ad-form__photo');
-  var adFormImageInput = adForm.querySelector('.ad-form__input');
+  var formImageContainer = form.querySelector('.ad-form__photo-container');
+  var formImageTemplate = form.querySelector('.ad-form__photo');
+  var formImageInput = form.querySelector('.ad-form__input');
 
-  var adFormReset = adForm.querySelector('.ad-form__reset');
+  var formReset = form.querySelector('.ad-form__reset');
 
   var mainRoot = document.querySelector('main');
 
   var successTemplate = document.querySelector('#success').content.querySelector('.success');
   var errorTemplate = document.querySelector('#error').content.querySelector('.error');
 
-  function validateGuests() {
-    var currentRooms = parseInt(adFormRooms.value, 10);
-    var currentCapacity = parseInt(adFormCapacity.value, 10);
+  function setAvatarToDefault() {
+    formAvatar.src = avatarDefaultImg;
+  }
 
-    for (var i = 0; i < adFormCapacity.length; i++) {
-      var capacityItem = parseInt(adFormCapacity[i].value, 10);
+  function validateGuests() {
+    var currentRooms = Number(formRooms.value);
+    var currentCapacity = Number(formCapacity.value);
+
+    for (var i = 0; i < formCapacity.length; i++) {
+      var capacityItem = Number(formCapacity[i].value);
       if (currentRooms === 100 && capacityItem === 0) {
-        adFormCapacity[i].removeAttribute('disabled');
+        formCapacity[i].removeAttribute('disabled');
         if (currentCapacity === capacityItem) {
-          adFormCapacity.setCustomValidity('');
+          formCapacity.setCustomValidity('');
         }
       } else if (currentRooms === 100) {
-        adFormCapacity[i].setAttribute('disabled', true);
+        formCapacity[i].setAttribute('disabled', true);
         if (currentCapacity === capacityItem) {
-          adFormCapacity.setCustomValidity('100 комнат не подходят для размещения гостей.');
+          formCapacity.setCustomValidity('100 комнат не подходят для размещения гостей.');
         }
       } else if (currentRooms < capacityItem && capacityItem !== 0) {
-        adFormCapacity[i].setAttribute('disabled', true);
+        formCapacity[i].setAttribute('disabled', true);
         if (currentCapacity === capacityItem) {
-          adFormCapacity.setCustomValidity('Количество гостей не может быть больше количества комнат.');
+          formCapacity.setCustomValidity('Количество гостей не может быть больше количества комнат.');
         }
       } else if (capacityItem === 0) {
-        adFormCapacity[i].setAttribute('disabled', true);
+        formCapacity[i].setAttribute('disabled', true);
         if (currentCapacity === capacityItem) {
-          adFormCapacity.setCustomValidity('Выберите хотя бы одного гостя.');
+          formCapacity.setCustomValidity('Выберите хотя бы одного гостя.');
         }
       } else {
-        adFormCapacity[i].removeAttribute('disabled');
+        formCapacity[i].removeAttribute('disabled');
         if (currentCapacity === capacityItem) {
-          adFormCapacity.setCustomValidity('');
+          formCapacity.setCustomValidity('');
         }
       }
     }
   }
 
   function validateTitle() {
-    if (adFormTitle.validity.tooShort) {
-      adFormTitle.setCustomValidity('Минимальная длина: ' + TITLE_MIN_LENGTH + '. Максимальная длина: ' + TITLE_MAX_LENGTH + '. Осталось ввести: ' + (TITLE_MIN_LENGTH - adFormTitle.value.length));
-    } else if (adFormTitle.validity.tooLong) {
-      adFormTitle.setCustomValidity('Максимальная длина: ' + TITLE_MAX_LENGTH + '. Осталось удалить: ' + (adFormTitle.value.length - TITLE_MAX_LENGTH));
-    } else if (adFormTitle.validity.valueMissing) {
-      adFormTitle.setCustomValidity('Обязательное поле');
+    if (formTitle.validity.tooShort) {
+      formTitle.setCustomValidity('Минимальная длина: ' + TITLE_MIN_LENGTH + '. Максимальная длина: ' + TITLE_MAX_LENGTH + '. Осталось ввести: ' + (TITLE_MIN_LENGTH - formTitle.value.length));
+    } else if (formTitle.validity.tooLong) {
+      formTitle.setCustomValidity('Максимальная длина: ' + TITLE_MAX_LENGTH + '. Осталось удалить: ' + (formTitle.value.length - TITLE_MAX_LENGTH));
+    } else if (formTitle.validity.valueMissing) {
+      formTitle.setCustomValidity('Обязательное поле');
     } else {
-      adFormTitle.setCustomValidity('');
+      formTitle.setCustomValidity('');
     }
   }
 
   function validatePrice() {
-    var currentType = adFormType.value;
+    var currentType = formType.value;
     var minPrice = 0;
     minPrice = minPriceMap[currentType];
 
-    adFormPrice.setAttribute('min', minPrice);
-    adFormPrice.setAttribute('placeholder', 'от ' + minPrice + ' руб.');
+    formPrice.setAttribute('min', minPrice);
+    formPrice.setAttribute('placeholder', 'от ' + minPrice + ' руб.');
 
-    if (adFormPrice.validity.rangeOverflow) {
-      adFormPrice.setCustomValidity('Максимальная цена: ' + PRICE_MAX);
-    } else if (adFormPrice.validity.rangeUnderflow) {
-      adFormPrice.setCustomValidity('Минимальная цена для типа жилья «' + window.util.propertyTypeMap[adFormType.value].toLowerCase() + '»: ' + minPrice);
-    } else if (adFormPrice.validity.valueMissing) {
-      adFormPrice.setCustomValidity('Обязательное поле');
+    if (formPrice.validity.rangeOverflow) {
+      formPrice.setCustomValidity('Максимальная цена: ' + PRICE_MAX);
+    } else if (formPrice.validity.rangeUnderflow) {
+      formPrice.setCustomValidity('Минимальная цена для типа жилья «' + window.util.propertyTypeMap[formType.value].toLowerCase() + '»: ' + minPrice);
+    } else if (formPrice.validity.valueMissing) {
+      formPrice.setCustomValidity('Обязательное поле');
     } else {
-      adFormPrice.setCustomValidity('');
+      formPrice.setCustomValidity('');
     }
   }
 
   function validateCheckinCheckout(evt) {
-    var optionValue = evt ? evt.target.value : adFormCheckin.value;
+    var optionValue = evt ? evt.target.value : formCheckin.value;
 
-    for (var i = 0; i < adFormCheckout.options.length; i++) {
-      adFormCheckout.options[i].selected = false;
-      adFormCheckin.options[i].selected = false;
-      if (adFormCheckout.options[i].value === optionValue) {
-        adFormCheckout.options[i].selected = true;
-        adFormCheckin.options[i].selected = true;
-      }
-    }
+    checkoutOptions.forEach(function (option, i) {
+      option.selected = (option.value === optionValue) ? true : false;
+      checkinOptions[i].selected = (option.value === optionValue) ? true : false;
+    });
   }
 
   function onCapacityChange() {
-    adFormCapacity.setCustomValidity('');
+    formCapacity.setCustomValidity('');
   }
 
   function validateForm() {
@@ -132,12 +135,14 @@
 
   function resetForm() {
     disable();
-    adForm.reset();
+    form.reset();
+    setAvatarToDefault();
+    removeImages();
     window.map.disable();
   }
 
   function onAvatarChange() {
-    var file = adFormAvatarInput.files[0];
+    var file = formAvatarInput.files[0];
     var fileName = file.name.toLowerCase();
 
     var matches = IMAGE_FILE_TYPES.some(function (item) {
@@ -148,15 +153,23 @@
       var reader = new FileReader();
 
       reader.addEventListener('load', function () {
-        adFormAvatar.src = reader.result;
+        formAvatar.src = reader.result;
       });
 
       reader.readAsDataURL(file);
     }
   }
 
+  function removeImages() {
+    var images = formImageContainer.querySelectorAll('.ad-form__photo');
+    images.forEach(function (image) {
+      image.remove();
+    });
+    formImageContainer.appendChild(formImageTemplate);
+  }
+
   function onImageChange() {
-    var file = adFormImageInput.files[0];
+    var file = formImageInput.files[0];
     var fileName = file.name.toLowerCase();
 
     var matches = IMAGE_FILE_TYPES.some(function (item) {
@@ -167,12 +180,12 @@
       var reader = new FileReader();
 
       reader.addEventListener('load', function () {
-        var newImageContainer = adFormImageTemplate.cloneNode(true);
+        var newImageContainer = formImageTemplate.cloneNode(true);
         var newImage = newImageContainer.querySelector('img');
         newImage.src = reader.result;
         newImage.style.width = '100%';
-        adFormImageContainer.appendChild(newImageContainer);
-        adFormImageTemplate.remove();
+        formImageContainer.appendChild(newImageContainer);
+        formImageTemplate.remove();
       });
 
       reader.readAsDataURL(file);
@@ -180,48 +193,48 @@
   }
 
   function disable() {
-    adFormFieldsets.forEach(function (fieldset) {
+    formFieldsets.forEach(function (fieldset) {
       fieldset.setAttribute('disabled', true);
     });
 
-    adForm.classList.add('ad-form--disabled');
+    form.classList.add('ad-form--disabled');
 
-    adFormAvatarInput.removeEventListener('change', onAvatarChange);
-    adFormTitle.removeEventListener('input', validateTitle);
-    adFormPrice.removeEventListener('input', validatePrice);
-    adFormRooms.removeEventListener('change', validateGuests);
-    adFormType.removeEventListener('change', validatePrice);
-    adFormCheckin.removeEventListener('change', validateCheckinCheckout);
-    adFormCheckout.removeEventListener('change', validateCheckinCheckout);
-    adFormCapacity.removeEventListener('change', onCapacityChange);
-    adFormImageInput.removeEventListener('change', onImageChange);
-    adFormReset.removeEventListener('click', resetForm);
+    formAvatarInput.removeEventListener('change', onAvatarChange);
+    formTitle.removeEventListener('input', validateTitle);
+    formPrice.removeEventListener('input', validatePrice);
+    formRooms.removeEventListener('change', validateGuests);
+    formType.removeEventListener('change', validatePrice);
+    formCheckin.removeEventListener('change', validateCheckinCheckout);
+    formCheckout.removeEventListener('change', validateCheckinCheckout);
+    formCapacity.removeEventListener('change', onCapacityChange);
+    formImageInput.removeEventListener('change', onImageChange);
+    formReset.removeEventListener('click', resetForm);
   }
 
   function enable() {
-    adFormFieldsets.forEach(function (fieldset) {
+    formFieldsets.forEach(function (fieldset) {
       fieldset.removeAttribute('disabled');
     });
 
-    adFormAddress.setAttribute('readonly', true);
-    adForm.classList.remove('ad-form--disabled');
+    formAddress.setAttribute('readonly', true);
+    form.classList.remove('ad-form--disabled');
 
     window.map.displayAddress();
 
     validateForm();
 
-    adFormAvatarInput.addEventListener('change', onAvatarChange);
-    adFormTitle.addEventListener('input', validateTitle);
-    adFormPrice.addEventListener('input', validatePrice);
-    adFormType.addEventListener('change', validatePrice);
-    adFormRooms.addEventListener('change', validateGuests);
-    adFormCheckin.addEventListener('change', validateCheckinCheckout);
-    adFormCheckout.addEventListener('change', validateCheckinCheckout);
-    adFormCapacity.addEventListener('change', onCapacityChange);
-    adFormImageInput.addEventListener('change', onImageChange);
-    adFormReset.addEventListener('click', resetForm);
+    formAvatarInput.addEventListener('change', onAvatarChange);
+    formTitle.addEventListener('input', validateTitle);
+    formPrice.addEventListener('input', validatePrice);
+    formType.addEventListener('change', validatePrice);
+    formRooms.addEventListener('change', validateGuests);
+    formCheckin.addEventListener('change', validateCheckinCheckout);
+    formCheckout.addEventListener('change', validateCheckinCheckout);
+    formCapacity.addEventListener('change', onCapacityChange);
+    formImageInput.addEventListener('change', onImageChange);
+    formReset.addEventListener('click', resetForm);
 
-    adForm.addEventListener('submit', onFormSubmit);
+    form.addEventListener('submit', onFormSubmit);
   }
 
   function onSubmitSuccess(successMessage) {
@@ -275,7 +288,7 @@
   }
 
   function onFormSubmit(evt) {
-    var formData = new FormData(adForm);
+    var formData = new FormData(form);
     window.server.save(formData, onSubmitSuccess, onSubmitError);
     evt.preventDefault();
   }

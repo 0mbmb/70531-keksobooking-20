@@ -6,6 +6,7 @@
   var mapFilter = mapContainer.querySelector('.map__filters-container');
 
   var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
+  var imageThumbnailTemplate = cardTemplate.querySelector('.popup__photo');
 
   function renderCardTextElement(propertyCard, propertyData, dataKey1, dataKey2, elementClass) {
     var textElement = propertyCard.querySelector('.' + elementClass);
@@ -14,7 +15,12 @@
 
   function renderCardPrice(propertyCard, propertyData) {
     var priceElement = propertyCard.querySelector('.popup__text--price');
-    priceElement.innerHTML = propertyData.offer.price ? propertyData.offer.price + ' \u20BD<span>/ночь</span>' : '';
+    if (propertyData.offer.price) {
+      priceElement.textContent = propertyData.offer.price;
+      priceElement.insertAdjacentHTML('beforeend', ' \u20BD<span>/ночь</span>');
+    } else {
+      priceElement.innerHTML = '';
+    }
   }
 
   function renderCardType(propertyCard, propertyData) {
@@ -67,15 +73,14 @@
 
   function renderCardImages(propertyCard, propertyData) {
     var photosContainer = propertyCard.querySelector('.popup__photos');
+    photosContainer.innerHTML = '';
     var photosFragment = document.createDocumentFragment();
-    var imageThumbnailTemplate = photosContainer.querySelector('.popup__photo');
-    for (var i = 0; i < propertyData.offer.photos.length; i++) {
+    propertyData.offer.photos.forEach(function (photo) {
       var imageThumbnail = imageThumbnailTemplate.cloneNode(true);
-      imageThumbnail.src = propertyData.offer.photos[i];
+      imageThumbnail.src = photo;
       photosFragment.appendChild(imageThumbnail);
-    }
+    });
     photosContainer.appendChild(photosFragment);
-    imageThumbnailTemplate.remove();
   }
 
   function createSinglePropertyCard(propertyData) {

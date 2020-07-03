@@ -2,9 +2,29 @@
 
 (function () {
 
+  var FILTER_DEFAULT = 'any';
+
+  var priceRangeMap = {
+    'low': {
+      min: 0,
+      max: 9999
+    },
+    'middle': {
+      min: 10000,
+      max: 50000
+    },
+    'high': {
+      min: 50001
+    },
+    'any': {
+      min: 0
+    }
+  };
+
   var filter = document.querySelector('.map__filters-container');
   var filterFieldsets = filter.querySelectorAll('fieldset');
   var filterSelects = filter.querySelectorAll('select');
+  var maxFieldsetsSelects = Math.max(filterFieldsets.length, filterSelects.length);
 
   var filterForm = filter.querySelector('.map__filters');
 
@@ -18,63 +38,52 @@
     filterForm.reset();
   }
 
+  function disableElement(element) {
+    if (element) {
+      element.setAttribute('disabled', true);
+    }
+  }
+
+  function enableElement(element) {
+    if (element) {
+      element.removeAttribute('disabled');
+    }
+  }
+
   function disable() {
     resetFilter();
-    for (var i = 0; i < Math.max(filterFieldsets.length, filterSelects.length); i++) {
-      if (filterFieldsets[i]) {
-        filterFieldsets[i].setAttribute('disabled', true);
-      }
-      if (filterSelects[i]) {
-        filterSelects[i].setAttribute('disabled', true);
-      }
+    for (var i = 0; i < maxFieldsetsSelects; i++) {
+      disableElement(filterFieldsets[i]);
+      disableElement(filterSelects[i]);
     }
     filterForm.removeEventListener('change', filterAll);
   }
 
   function enable() {
-    for (var i = 0; i < Math.max(filterFieldsets.length, filterSelects.length); i++) {
-      if (filterFieldsets[i]) {
-        filterFieldsets[i].removeAttribute('disabled');
-      }
-      if (filterSelects[i]) {
-        filterSelects[i].removeAttribute('disabled');
-      }
+    for (var i = 0; i < maxFieldsetsSelects; i++) {
+      enableElement(filterFieldsets[i]);
+      enableElement(filterSelects[i]);
     }
     filterForm.addEventListener('change', filterAll);
   }
 
   function filterByType(item) {
-    return item.offer.type === filterType.value || filterType.value === 'any';
+    return item.offer.type === filterType.value || filterType.value === FILTER_DEFAULT;
   }
 
   function filterByPrice(item) {
-    switch (filterPrice.value) {
-      case 'any': return true;
-      case 'middle': return item.offer.price >= 10000 && item.offer.price < 50000;
-      case 'low': return item.offer.price < 10000;
-      case 'high': return item.offer.price >= 50000;
-      default: return true;
+    if (!priceRangeMap[filterPrice.value].max) {
+      return item.offer.price >= priceRangeMap[filterPrice.value].min;
     }
+    return item.offer.price >= priceRangeMap[filterPrice.value].min && item.offer.price <= priceRangeMap[filterPrice.value].max;
   }
 
   function filterByRooms(item) {
-    switch (filterRooms.value) {
-      case 'any': return true;
-      case '1': return item.offer.rooms === 1;
-      case '2': return item.offer.rooms === 2;
-      case '3': return item.offer.rooms === 3;
-      default: return true;
-    }
+    return item.offer.rooms === Number(filterRooms.value) || filterRooms.value === FILTER_DEFAULT;
   }
 
   function filterByGuests(item) {
-    switch (filterGuests.value) {
-      case 'any': return true;
-      case '0': return item.offer.guests === 100;
-      case '1': return item.offer.guests === 1;
-      case '2': return item.offer.guests === 2;
-      default: return true;
-    }
+    return item.offer.guests === Number(filterGuests.value) || filterGuests.value === FILTER_DEFAULT;
   }
 
   function filterByFeatures(item) {

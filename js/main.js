@@ -19,13 +19,14 @@
   }
 
   function enablePage() {
+    if (!window.util.isMapActive()) {
+      window.map.enable();
+      window.map.renderAllPins(window.server.propertiesData);
+      window.form.enable();
+    }
     if (!enablePage.didrun) {
       enablePage.didrun = true;
       window.server.load(onLoadSuccess);
-    }
-    if (!window.util.isMapActive()) {
-      window.map.enable();
-      window.form.enable();
     }
   }
 
