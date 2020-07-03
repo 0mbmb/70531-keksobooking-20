@@ -6,26 +6,34 @@
 
   function onMainPinClick(evt) {
     window.util.onLeftMouseClick(evt, enablePage);
+    window.map.onMainPinDrag(evt);
   }
 
-  function onMainPinKeydown(evt) {
+  function onMainPinEnter(evt) {
     window.util.onEnterKeydown(evt, enablePage);
   }
 
-  function enablePage() {
-    if (!window.util.isMapActive()) {
-      var similarProperties = window.data.createSimilarPropertiesList();
-      window.map.renderAllPins(similarProperties);
-    }
-    window.map.enableMap();
-    window.form.enableAdForm();
+  function onLoadSuccess(propertiesData) {
+    window.server.propertiesData = propertiesData;
+    window.map.renderAllPins(propertiesData);
   }
 
-  window.map.disableMapFilter();
-  window.form.disableAdForm();
-  window.form.displayAddress();
+  function enablePage() {
+    if (!enablePage.didrun) {
+      enablePage.didrun = true;
+      window.server.load(onLoadSuccess);
+    }
+    if (!window.util.isMapActive()) {
+      window.map.enable();
+      window.form.enable();
+    }
+  }
+
+  window.filter.disable();
+  window.form.disable();
+  window.map.displayAddress();
 
   mainPin.addEventListener('mousedown', onMainPinClick);
-  mainPin.addEventListener('keydown', onMainPinKeydown);
+  mainPin.addEventListener('keydown', onMainPinEnter);
 
 })();

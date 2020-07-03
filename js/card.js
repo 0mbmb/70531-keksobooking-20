@@ -2,21 +2,14 @@
 
 (function () {
 
-  var TYPES = {
-    palace: 'Дворец',
-    house: 'Дом',
-    bungalo: 'Бунгало',
-    flat: 'Квартира'
-  };
-
   var mapContainer = document.querySelector('.map');
   var mapFilter = mapContainer.querySelector('.map__filters-container');
 
   var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
 
-  function renderCardTextElement(propertyCard, propertyData, dataObjKey1, dataObjKey2, elementClass) {
+  function renderCardTextElement(propertyCard, propertyData, dataKey1, dataKey2, elementClass) {
     var textElement = propertyCard.querySelector('.' + elementClass);
-    textElement.textContent = propertyData[dataObjKey1][dataObjKey2] ? propertyData[dataObjKey1][dataObjKey2] : '';
+    textElement.textContent = propertyData[dataKey1][dataKey2] ? propertyData[dataKey1][dataKey2] : '';
   }
 
   function renderCardPrice(propertyCard, propertyData) {
@@ -26,7 +19,7 @@
 
   function renderCardType(propertyCard, propertyData) {
     var typeElement = propertyCard.querySelector('.popup__type');
-    typeElement.textContent = propertyData.offer.type ? TYPES[propertyData.offer.type] : '';
+    typeElement.textContent = propertyData.offer.type ? window.util.propertyTypeMap[propertyData.offer.type] : '';
   }
 
   function renderCardAvatar(propertyCard, propertyData) {
@@ -62,16 +55,13 @@
 
   function renderCardFeatures(propertyCard, propertyData) {
     var featuresList = propertyCard.querySelector('.popup__features');
-    var features = propertyCard.querySelectorAll('.popup__feature');
-
     var featuresFragment = document.createDocumentFragment();
-    for (var i = 0; i < features.length; i++) {
-      var feature = featuresList.querySelector('.popup__feature--' + propertyData.offer.features[i]);
-      if (feature) {
-        featuresFragment.appendChild(feature.cloneNode());
-      }
-      features[i].remove();
-    }
+
+    propertyData.offer.features.forEach(function (feature) {
+      var currentFeature = featuresList.querySelector('.popup__feature--' + feature).cloneNode();
+      featuresFragment.appendChild(currentFeature);
+    });
+    featuresList.innerHTML = '';
     featuresList.appendChild(featuresFragment);
   }
 
@@ -105,23 +95,29 @@
     return propertyCard;
   }
 
-  function removeAllCards() {
-    var allCards = mapContainer.querySelectorAll('.map__card');
-    for (var i = 0; i < allCards.length; i++) {
-      allCards[i].remove();
-    }
+  function deactivateAllPins() {
+    var similarPins = mapContainer.querySelectorAll('.map__pin--similar');
+    similarPins.forEach(function (pin) {
+      pin.classList.remove('map__pin--active');
+    });
   }
 
-  function renderSingleCard(propertyData) {
+  function removeAllCards() {
+    var allCards = mapContainer.querySelectorAll('.map__card');
+    allCards.forEach(function (card) {
+      card.remove();
+    });
+  }
+
+  function render(propertyData) {
     removeAllCards();
     var newCard = createSinglePropertyCard(propertyData);
     var newCardClose = newCard.querySelector('.popup__close');
     mapContainer.insertBefore(newCard, mapFilter);
 
-    // нормально ли такое решение? я создаю коллбек внутри другой функции,
-    // чтобы "красиво" передать обработчикам событий
     function removeNewCard() {
       newCard.remove();
+      deactivateAllPins();
     }
 
     newCardClose.addEventListener('click', function (evt) {
@@ -138,7 +134,9 @@
   }
 
   window.card = {
-    renderSingleCard: renderSingleCard
+    render: render,
+    removeAllCards: removeAllCards,
+    deactivateAllPins: deactivateAllPins
   };
 
 })();

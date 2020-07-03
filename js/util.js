@@ -2,6 +2,13 @@
 
 (function () {
 
+  var propertyTypeMap = {
+    'palace': 'Дворец',
+    'house': 'Дом',
+    'bungalo': 'Бунгало',
+    'flat': 'Квартира'
+  };
+
   function getRandomFromArray(array) {
     return array[Math.floor(Math.random() * array.length)];
   }
@@ -46,14 +53,36 @@
     }
   }
 
+  function getElementArea(element) {
+    var box = element.getBoundingClientRect();
+    return {
+      top: box.top + pageYOffset,
+      bottom: box.top + pageYOffset + box.height,
+      left: box.left + pageXOffset,
+      rigth: box.left + pageXOffset + box.width,
+      width: box.width
+    };
+  }
+
+  function compareArrayToArray(firstArray, secondArray) {
+    var contains = true;
+    for (var i = 0; i < Math.min(firstArray.length, secondArray.length); i++) {
+      contains = contains && secondArray.includes(firstArray[i]);
+    }
+    return firstArray.length === 0 || contains && (firstArray.length <= secondArray.length);
+  }
+
   window.util = {
+    propertyTypeMap: propertyTypeMap,
     getRandomFromArray: getRandomFromArray,
     getRandomIntFromRange: getRandomIntFromRange,
     removeRandomItemsFromArray: removeRandomItemsFromArray,
     isMapActive: isMapActive,
     onEnterKeydown: onEnterKeydown,
     onEscKeydown: onEscKeydown,
-    onLeftMouseClick: onLeftMouseClick
+    onLeftMouseClick: onLeftMouseClick,
+    getElementArea: getElementArea,
+    compareArrayToArray: compareArrayToArray
   };
 
 })();

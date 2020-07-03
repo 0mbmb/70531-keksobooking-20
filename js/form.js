@@ -5,42 +5,40 @@
   var TITLE_MIN_LENGTH = 30;
   var TITLE_MAX_LENGTH = 100;
   var PRICE_MAX = 1000000;
+  var IMAGE_FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 
-  var MAIN_PIN_DEFAULT_SIZE = [62, 62];
-  var MAIN_PIN_ACTIVE_SIZE = [62, 84];
-
-  var TYPES = {
-    palace: 'Дворец',
-    house: 'Дом',
-    bungalo: 'Бунгало',
-    flat: 'Квартира'
+  var minPriceMap = {
+    'bungalo': 0,
+    'flat': 1000,
+    'house': 5000,
+    'palace': 10000
   };
 
   var adForm = document.querySelector('.ad-form');
   var adFormFieldsets = adForm.querySelectorAll('fieldset');
+
+  var adFormAvatar = adForm.querySelector('.ad-form-header__preview img');
+  var adFormAvatarInput = adForm.querySelector('.ad-form-header__input');
+
   var adFormTitle = adForm.querySelector('#title');
   var adFormPrice = adForm.querySelector('#price');
   var adFormAddress = adForm.querySelector('input[name=address]');
   var adFormRooms = adForm.querySelector('#room_number');
   var adFormCapacity = adForm.querySelector('#capacity');
   var adFormType = adForm.querySelector('#type');
-
   var adFormCheckin = adForm.querySelector('#timein');
   var adFormCheckout = adForm.querySelector('#timeout');
 
-  var mainPin = document.querySelector('.map__pin--main');
+  var adFormImageContainer = adForm.querySelector('.ad-form__photo-container');
+  var adFormImageTemplate = adForm.querySelector('.ad-form__photo');
+  var adFormImageInput = adForm.querySelector('.ad-form__input');
 
-  function getPinCoordinates() {
-    var xOffset = window.util.isMapActive() ? MAIN_PIN_ACTIVE_SIZE[0] / 2 : MAIN_PIN_DEFAULT_SIZE[0] / 2;
-    var yOffset = window.util.isMapActive() ? MAIN_PIN_ACTIVE_SIZE[1] : MAIN_PIN_DEFAULT_SIZE[1] / 2;
+  var adFormReset = adForm.querySelector('.ad-form__reset');
 
-    return [parseInt(mainPin.style.left, 10) + xOffset, parseInt(mainPin.style.top, 10) + yOffset];
-  }
+  var mainRoot = document.querySelector('main');
 
-  function displayAddress() {
-    var pinCoordinates = getPinCoordinates();
-    adFormAddress.value = pinCoordinates[0] + ', ' + pinCoordinates[1];
-  }
+  var successTemplate = document.querySelector('#success').content.querySelector('.success');
+  var errorTemplate = document.querySelector('#error').content.querySelector('.error');
 
   function validateGuests() {
     var currentRooms = parseInt(adFormRooms.value, 10);
@@ -92,27 +90,15 @@
   function validatePrice() {
     var currentType = adFormType.value;
     var minPrice = 0;
-    switch (currentType) {
-      case 'bungalo':
-        minPrice = 0;
-        break;
-      case 'flat':
-        minPrice = 1000;
-        break;
-      case 'house':
-        minPrice = 5000;
-        break;
-      case 'palace':
-        minPrice = 10000;
-        break;
-    }
+    minPrice = minPriceMap[currentType];
+
     adFormPrice.setAttribute('min', minPrice);
     adFormPrice.setAttribute('placeholder', 'от ' + minPrice + ' руб.');
 
     if (adFormPrice.validity.rangeOverflow) {
       adFormPrice.setCustomValidity('Максимальная цена: ' + PRICE_MAX);
     } else if (adFormPrice.validity.rangeUnderflow) {
-      adFormPrice.setCustomValidity('Минимальная цена для типа жилья «' + TYPES[adFormType.value].toLowerCase() + '»: ' + minPrice);
+      adFormPrice.setCustomValidity('Минимальная цена для типа жилья «' + window.util.propertyTypeMap[adFormType.value].toLowerCase() + '»: ' + minPrice);
     } else if (adFormPrice.validity.valueMissing) {
       adFormPrice.setCustomValidity('Обязательное поле');
     } else {
@@ -133,54 +119,170 @@
     }
   }
 
+  function onCapacityChange() {
+    adFormCapacity.setCustomValidity('');
+  }
+
   function validateForm() {
-    displayAddress();
     validateGuests();
     validateTitle();
     validatePrice();
     validateCheckinCheckout();
   }
 
-  function disableAdForm() {
-    for (var i = 0; i < adFormFieldsets.length; i++) {
-      adFormFieldsets[i].setAttribute('disabled', true);
+  function resetForm() {
+    disable();
+    adForm.reset();
+    window.map.disable();
+  }
+
+  function onAvatarChange() {
+    var file = adFormAvatarInput.files[0];
+    var fileName = file.name.toLowerCase();
+
+    var matches = IMAGE_FILE_TYPES.some(function (item) {
+      return fileName.endsWith(item);
+    });
+
+    if (matches) {
+      var reader = new FileReader();
+
+      reader.addEventListener('load', function () {
+        adFormAvatar.src = reader.result;
+      });
+
+      reader.readAsDataURL(file);
     }
+  }
+
+  function onImageChange() {
+    var file = adFormImageInput.files[0];
+    var fileName = file.name.toLowerCase();
+
+    var matches = IMAGE_FILE_TYPES.some(function (item) {
+      return fileName.endsWith(item);
+    });
+
+    if (matches) {
+      var reader = new FileReader();
+
+      reader.addEventListener('load', function () {
+        var newImageContainer = adFormImageTemplate.cloneNode(true);
+        var newImage = newImageContainer.querySelector('img');
+        newImage.src = reader.result;
+        newImage.style.width = '100%';
+        adFormImageContainer.appendChild(newImageContainer);
+        adFormImageTemplate.remove();
+      });
+
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function disable() {
+    adFormFieldsets.forEach(function (fieldset) {
+      fieldset.setAttribute('disabled', true);
+    });
+
     adForm.classList.add('ad-form--disabled');
 
+    adFormAvatarInput.removeEventListener('change', onAvatarChange);
     adFormTitle.removeEventListener('input', validateTitle);
     adFormPrice.removeEventListener('input', validatePrice);
     adFormRooms.removeEventListener('change', validateGuests);
     adFormType.removeEventListener('change', validatePrice);
     adFormCheckin.removeEventListener('change', validateCheckinCheckout);
     adFormCheckout.removeEventListener('change', validateCheckinCheckout);
+    adFormCapacity.removeEventListener('change', onCapacityChange);
+    adFormImageInput.removeEventListener('change', onImageChange);
+    adFormReset.removeEventListener('click', resetForm);
   }
 
-  function enableAdForm() {
-    for (var i = 0; i < adFormFieldsets.length; i++) {
-      adFormFieldsets[i].removeAttribute('disabled');
-    }
-    adFormAddress.setAttribute('disabled', true);
+  function enable() {
+    adFormFieldsets.forEach(function (fieldset) {
+      fieldset.removeAttribute('disabled');
+    });
+
+    adFormAddress.setAttribute('readonly', true);
     adForm.classList.remove('ad-form--disabled');
+
+    window.map.displayAddress();
 
     validateForm();
 
+    adFormAvatarInput.addEventListener('change', onAvatarChange);
     adFormTitle.addEventListener('input', validateTitle);
     adFormPrice.addEventListener('input', validatePrice);
-    adFormRooms.addEventListener('change', validateGuests);
     adFormType.addEventListener('change', validatePrice);
+    adFormRooms.addEventListener('change', validateGuests);
     adFormCheckin.addEventListener('change', validateCheckinCheckout);
     adFormCheckout.addEventListener('change', validateCheckinCheckout);
+    adFormCapacity.addEventListener('change', onCapacityChange);
+    adFormImageInput.addEventListener('change', onImageChange);
+    adFormReset.addEventListener('click', resetForm);
 
-    // удалить этот обработчик:
-    adFormCapacity.addEventListener('change', function () {
-      adFormCapacity.setCustomValidity('');
-    });
+    adForm.addEventListener('submit', onFormSubmit);
+  }
+
+  function onSubmitSuccess(successMessage) {
+    var successWindow = successTemplate.cloneNode(true);
+    var successMessageContainer = successWindow.querySelector('.success__message');
+    successWindow.setAttribute('tabindex', 0);
+    successMessageContainer.textContent = successMessage;
+    mainRoot.appendChild(successWindow);
+    successWindow.focus();
+
+    function closeSuccess() {
+      successWindow.remove();
+    }
+
+    function onSuccessEscape(evt) {
+      window.util.onEscKeydown(evt, closeSuccess);
+    }
+
+    function onSuccessClick(evt) {
+      window.util.onLeftMouseClick(evt, closeSuccess);
+    }
+
+    successWindow.addEventListener('keydown', onSuccessEscape);
+    successWindow.addEventListener('click', onSuccessClick);
+
+    resetForm();
+  }
+
+  function onSubmitError(errorMessage) {
+    var errorWindow = errorTemplate.cloneNode(true);
+    var errorMessageContainer = errorWindow.querySelector('.error__message');
+    var errorClose = errorWindow.querySelector('.error__button');
+    errorMessageContainer.textContent = errorMessage;
+    mainRoot.appendChild(errorWindow);
+    errorClose.focus();
+
+    function closeError() {
+      errorWindow.remove();
+    }
+
+    function onErrorEscape(evt) {
+      window.util.onEscKeydown(evt, closeError);
+    }
+
+    function onErrorClick(evt) {
+      window.util.onLeftMouseClick(evt, closeError);
+    }
+
+    errorWindow.addEventListener('keydown', onErrorEscape);
+    errorWindow.addEventListener('click', onErrorClick);
+  }
+
+  function onFormSubmit(evt) {
+    var formData = new FormData(adForm);
+    window.server.save(formData, onSubmitSuccess, onSubmitError);
+    evt.preventDefault();
   }
 
   window.form = {
-    displayAddress: displayAddress,
-    disableAdForm: disableAdForm,
-    enableAdForm: enableAdForm
+    disable: disable,
+    enable: enable
   };
 
 })();
